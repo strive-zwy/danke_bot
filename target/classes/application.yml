@@ -1,0 +1,43 @@
+# simbot
+simbot:
+  core:
+    # 扫描 simbot-bots目录下的所有 .bot 文件。
+    bot-resource-type: RESOURCE_FIRST
+#log
+logging:
+  file:
+    path: logging
+    max-size: 10MB
+    max-history: 7
+  level:
+    love:
+      forte:
+        simbot: debug
+#spring
+spring:
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/danke_test?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=UTC
+    username: root
+    password: root
+  flyway:
+    url: jdbc:mysql://localhost:3306/danke_test?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=UTC
+    user: root
+    password: root
+    enabled: true
+  #邮箱配置
+#  mail:
+#    host: smtp.163.com
+#    username: zeal_coder@163.com
+#    password: CKLRBUHSGYBOBNTO # 邮箱开启smtp后显示的授权码
+#    default-encoding: utf-8
+#    properties:
+#      mail:
+#        smtp:
+#          auth: true
+#          starttls:
+#            enable: true
+#            required: true
