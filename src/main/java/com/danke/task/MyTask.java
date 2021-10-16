@@ -80,6 +80,18 @@ public class MyTask {
             botManager.getDefaultBot().getSender().SENDER.sendPrivateMsg(u.getQqNumber(), task.getRemindStr());
             System.out.println("每日定时任务执行：用户---" + u.getQqNumber() + "---" + LocalDateTime.now().toLocalTime());
         });
+        List<Task> list_everyday_group = taskMapper.listEntity(
+                taskMapper.query().where
+                        .state().eq(TaskStateEnum.TASK_EXECUTE.getState())
+                        .and.type().eq(TaskTypeEnum.TASK_EVERYDAY.getType())
+                        .and.pOrG().eq(POrGEnum.GROUP_TASK.getType())
+                        .and.remindTime().eq(time).end()
+        );
+        list_everyday_group.forEach(task -> {
+            GroupInfo g = task.findGroupInfo();
+            botManager.getDefaultBot().getSender().SENDER.sendGroupMsg(g.getGroupNumber(), task.getRemindStr());
+            System.out.println("每日群定时任务执行：群号---" + g.getGroupNumber() + "---" + LocalDateTime.now().toLocalTime());
+        });
     }
 
     /*
