@@ -118,7 +118,7 @@ public class GroupTaskListener {
         CatCodeUtil catCodeUtil = CatCodeUtil.getInstance();
         String at = catCodeUtil.getStringTemplate().at(msg.getAccountInfo().getAccountCodeNumber());
         if (count == 0) {
-            sender.SENDER.sendGroupMsg(msg, at+"您没有任何定时任务正在执行");
+            sender.SENDER.sendGroupMsg(msg, at+"该群没有任何定时任务正在执行");
             return;
         }
 //        sender.SENDER.sendPrivateMsg(msg, "正在删除......");
@@ -146,9 +146,13 @@ public class GroupTaskListener {
             matchType = MatchType.REGEX_FIND)
     public void deleteTaskById(GroupMsg msg, MsgSender sender,
                                @FilterValue("taskId") Long taskId){
+        GroupInfo g = groupInfoMapper.findOne(
+                groupInfoMapper.query().where.groupNumber().eq(msg.getGroupInfo().getGroupCodeNumber()).end()
+        );
         Task task = taskMapper.findOne(
                 taskMapper.query().where.id().eq(taskId)
                         .and.state().eq(TaskStateEnum.TASK_EXECUTE)
+                        .and.creatorId().eq(g.getId())
                         .and.pOrG().eq(POrGEnum.GROUP_TASK.getType()).end()
         );
         CatCodeUtil catCodeUtil = CatCodeUtil.getInstance();

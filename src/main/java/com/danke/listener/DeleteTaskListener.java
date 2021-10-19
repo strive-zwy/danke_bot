@@ -1,6 +1,7 @@
 package com.danke.listener;
 
 import com.danke.entity.Task;
+import com.danke.entity.UserInfo;
 import com.danke.enums.POrGEnum;
 import com.danke.enums.TaskStateEnum;
 import com.danke.enums.TaskTypeEnum;
@@ -103,9 +104,13 @@ public class DeleteTaskListener {
     @Filter(value = "取消任务{{taskId,\\d+}}", matchType = MatchType.REGEX_MATCHES)
     public void deleteTaskById(PrivateMsg msg, MsgSender sender,
                                @FilterValue("taskId") Long taskId){
+        UserInfo u = userInfoMapper.findOne(
+                userInfoMapper.query().where.qqNumber().eq(msg.getAccountInfo().getAccountCodeNumber()).end()
+        );
         Task task = taskMapper.findOne(
                 taskMapper.query().where.id().eq(taskId)
                 .and.state().eq(TaskStateEnum.TASK_EXECUTE)
+                .and.creatorId().eq(u.getId())
                 .and.pOrG().eq(POrGEnum.USER_TASK.getType()).end()
         );
         if (task == null) {
