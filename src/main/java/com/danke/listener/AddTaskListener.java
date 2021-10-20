@@ -205,10 +205,10 @@ public class AddTaskListener {
         }
     }
 
-    @OnPrivate
+/*    @OnPrivate
     public void listen(PrivateMsg msg, MsgSender sender){
         sender.SENDER.sendPrivateMsg(msg,msg.getText());
-    }
+    }*/
 
     // 判断字符串是否是时间格式
     public boolean isTime(String time, String format) {
