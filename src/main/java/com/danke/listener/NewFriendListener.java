@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
  * @author : zwy
  * @version : 1.0
  * @createTime : 2021/10/16 13:38
- * @Description : 处理好友申请
+ * @Description : 处理好友申请监听
  */
 @Service
 public class NewFriendListener {
