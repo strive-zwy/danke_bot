@@ -9,6 +9,7 @@ import cn.org.atool.fluent.mybatis.base.RichEntity;
 import cn.org.atool.fluent.mybatis.functions.TableSupplier;
 import java.io.Serializable;
 import java.lang.Class;
+import java.lang.Integer;
 import java.lang.Long;
 import java.lang.Override;
 import java.lang.String;
@@ -72,6 +73,12 @@ public class GroupInfo extends RichEntity {
   @TableField("group_number")
   private Long groupNumber;
 
+  /**
+   * 是否开启监控，默认0未开启，1开启
+   */
+  @TableField("isMonitor")
+  private Integer isMonitor;
+
   @Override
   public Serializable findPk() {
     return this.id;
@@ -98,5 +105,13 @@ public class GroupInfo extends RichEntity {
   @RefMethod("creatorId = id")
   public List<Task> findTaskList() {
     return super.invoke("findTaskList", true);
+  }
+
+  /**
+   * 实现定义在{@link cn.org.atool.fluent.mybatis.base.IRefs}子类Refs上
+   */
+  @RefMethod("groupId = id")
+  public List<Keyword> findKeywordList() {
+    return super.invoke("findKeywordList", true);
   }
 }
