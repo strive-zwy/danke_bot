@@ -34,7 +34,7 @@ public class RobotReplyListener {
         map.put("question",msg.getText());
         map.put("uniqueid",msg.getAccountInfo().getAccountCode());
         String r = OkHttpUtils.sendGet(httpUrl,map);
-        Gson gson=new Gson();
+        Gson gson = new Gson();
         RobotReplyJsonBean reply = gson.fromJson(r, RobotReplyJsonBean.class);
         sender.SENDER.sendPrivateMsg(msg, reply.getNewslist().get(0).getReply());
     }
@@ -50,7 +50,7 @@ public class RobotReplyListener {
         map.put("question",msg.getText());
         map.put("uniqueid",msg.getAccountInfo().getAccountCode());
         String r = OkHttpUtils.sendGet(httpUrl,map);
-        Gson gson=new Gson();
+        Gson gson = new Gson();
         RobotReplyJsonBean reply = gson.fromJson(r, RobotReplyJsonBean.class);
         sender.SENDER.sendGroupMsg(msg, reply.getNewslist().get(0).getReply());
     }

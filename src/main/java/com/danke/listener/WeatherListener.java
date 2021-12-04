@@ -7,10 +7,11 @@ import love.forte.simbot.annotation.*;
 import love.forte.simbot.api.message.events.PrivateMsg;
 import love.forte.simbot.api.sender.MsgSender;
 import love.forte.simbot.filter.MatchType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author : zwy
@@ -21,10 +22,8 @@ import java.util.List;
 @Service
 public class WeatherListener {
 
-    static String httpUrl = "http://api.tianapi.com/txapi/tianqi/index?key=0fbe2405cca172ce5115e0a8c8a63834&city=";
-
-    @Autowired
-    private OkHttpUtils okHttpUtils;
+    static String httpUrl = "http://api.tianapi.com/txapi/tianqi/index";
+    static Map<String,String> map = new HashMap<>();
 
     /*
      * 获取当前天气信息
@@ -38,8 +37,10 @@ public class WeatherListener {
     @Filter(value = "{{city,[\\s\\S]+}}今日天气", matchType = MatchType.REGEX_MATCHES)
     public void nowWeather(PrivateMsg msg, MsgSender sender,
                                 @FilterValue("city") String city){
-        String w = okHttpUtils.doGet(httpUrl+city);
-        Gson gson=new Gson();
+        map.put("key","0fbe2405cca172ce5115e0a8c8a63834");
+        map.put("city",city);
+        String w = OkHttpUtils.sendGet(httpUrl,map);
+        Gson gson = new Gson();
         WeatherJsonBean weather = gson.fromJson(w, WeatherJsonBean.class);
         sender.SENDER.sendPrivateMsg(msg, weather.nowWeather());
     }
@@ -54,8 +55,10 @@ public class WeatherListener {
     @Filter(value = "{{city,[\\s\\S]+}}明日天气", matchType = MatchType.REGEX_MATCHES)
     public void tomorrowWeather(PrivateMsg msg, MsgSender sender,
                                 @FilterValue("city") String city){
-        String w = okHttpUtils.doGet(httpUrl+city);
-        Gson gson=new Gson();
+        map.put("key","0fbe2405cca172ce5115e0a8c8a63834");
+        map.put("city",city);
+        String w = OkHttpUtils.sendGet(httpUrl,map);
+        Gson gson = new Gson();
         WeatherJsonBean weather = gson.fromJson(w, WeatherJsonBean.class);
         sender.SENDER.sendPrivateMsg(msg, weather.nowWeather());
     }
@@ -72,8 +75,10 @@ public class WeatherListener {
     public void futureWeather(PrivateMsg msg, MsgSender sender,
                                 @FilterValue("city") String city){
         sender.SENDER.sendPrivateMsg(msg, city+ "未来三天天气请查收~");
-        String w = okHttpUtils.doGet(httpUrl+city);
-        Gson gson=new Gson();
+        map.put("key","0fbe2405cca172ce5115e0a8c8a63834");
+        map.put("city",city);
+        String w = OkHttpUtils.sendGet(httpUrl,map);
+        Gson gson = new Gson();
         WeatherJsonBean weather = gson.fromJson(w, WeatherJsonBean.class);
         List<String> ws = weather.futureWeather();
         ws.forEach(s -> {
@@ -93,8 +98,10 @@ public class WeatherListener {
     public void future5Weather(PrivateMsg msg, MsgSender sender,
                                 @FilterValue("city") String city){
         sender.SENDER.sendPrivateMsg(msg, city+ "未来五天天气请查收~");
-        String w = okHttpUtils.doGet(httpUrl+city);
-        Gson gson=new Gson();
+        map.put("key","0fbe2405cca172ce5115e0a8c8a63834");
+        map.put("city",city);
+        String w = OkHttpUtils.sendGet(httpUrl,map);
+        Gson gson = new Gson();
         WeatherJsonBean weather = gson.fromJson(w, WeatherJsonBean.class);
         List<String> ws = weather.future5Weather();
         ws.forEach(s -> {

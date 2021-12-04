@@ -3,6 +3,7 @@ package com.danke.listener;
 import catcode.CatCodeUtil;
 import com.danke.entity.GroupInfo;
 import com.danke.entity.Task;
+import com.danke.entity.UserInfo;
 import com.danke.enums.POrGEnum;
 import com.danke.enums.TaskStateEnum;
 import com.danke.enums.TaskTypeEnum;
@@ -11,6 +12,7 @@ import com.danke.mapper.TaskMapper;
 import com.danke.utils.TaskStrUtils;
 import love.forte.simbot.annotation.*;
 import love.forte.simbot.api.message.events.GroupMsg;
+import love.forte.simbot.api.message.events.PrivateMsg;
 import love.forte.simbot.api.sender.MsgSender;
 import love.forte.simbot.filter.MatchType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -77,13 +80,42 @@ public class GroupTaskListener {
         }
     }
 
+    @OnGroup
+    @Priority(1)
+    @ListenBreak
+    @Filter(value = "{{number,\\d+}}{{type,[\\s\\S]+}}后说{{str,[\\s\\S]+}}",
+            atBot = true, matchType = MatchType.REGEX_FIND)
+    public void addOnceTask(GroupMsg msg, MsgSender sender,
+                            @FilterValue("number") long number,
+                            @FilterValue("type") String type,
+                            @FilterValue("str") String str){
+        sender.SENDER.sendGroupMsg(msg, "好哒~");
+        GroupInfo g = groupInfoMapper.findOne(
+                groupInfoMapper.query().where.groupNumber().eq(msg.getGroupInfo().getGroupCodeNumber()).end()
+        );
+        Task task = new Task();
+        task.setRemindStr(str)
+                .setCreatorId(g.getId())
+                .setPOrG(POrGEnum.GROUP_TASK.getType())
+                .setRemindDate(LocalDateTime.now().toLocalDate().toString())
+                .setType(TaskTypeEnum.TASK_ONCE.getType());
+        if ("秒".equals(type)) {
+            task.setRemindTime(LocalDateTime.now().toLocalTime().plusSeconds(number).toString().substring(0,8));
+        }else if ("分钟".equals(type)) {
+            task.setRemindTime(LocalDateTime.now().toLocalTime().plusMinutes(number).toString().substring(0,8));
+        }else if ("小时".equals(type)) {
+            task.setRemindTime(LocalDateTime.now().toLocalTime().plusHours(number).toString().substring(0,8));
+        }
+        taskMapper.insert(task);
+    }
+
     /*
      * 查询所有定时任务
      * */
     @OnGroup
     @ListenBreak
     @Filter(value = "查询所有定时任务", atBot = true, matchType = MatchType.ENDS_WITH)
-    public void AskAllTask(GroupMsg msg, MsgSender sender){
+    public void askAllTask(GroupMsg msg, MsgSender sender){
         List<Task> list = taskMapper.listEntity(
                 taskMapper.query().where.creatorId().eq(
                         groupInfoMapper.findOne(
