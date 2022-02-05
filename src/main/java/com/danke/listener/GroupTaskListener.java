@@ -3,7 +3,6 @@ package com.danke.listener;
 import catcode.CatCodeUtil;
 import com.danke.entity.GroupInfo;
 import com.danke.entity.Task;
-import com.danke.entity.UserInfo;
 import com.danke.enums.POrGEnum;
 import com.danke.enums.TaskStateEnum;
 import com.danke.enums.TaskTypeEnum;
@@ -44,7 +43,7 @@ public class GroupTaskListener {
      * 每日任务添加
      * 每天{time}提醒我{str}
      * 比如：每天07:00提醒我健康打卡
-     * */
+     **/
     @OnGroup
     @ListenBreak
     @Filter(value = "每天的{{time,[\\s\\S]+}}提醒大家{{str,[\\s\\S]+}}",

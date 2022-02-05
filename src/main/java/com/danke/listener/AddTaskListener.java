@@ -1,11 +1,11 @@
 package com.danke.listener;
 
+import com.danke.entity.QqInfo;
 import com.danke.entity.Task;
-import com.danke.entity.UserInfo;
 import com.danke.enums.POrGEnum;
 import com.danke.enums.TaskTypeEnum;
+import com.danke.mapper.QqInfoMapper;
 import com.danke.mapper.TaskMapper;
-import com.danke.mapper.UserInfoMapper;
 import love.forte.simbot.annotation.*;
 import love.forte.simbot.api.message.events.PrivateMsg;
 import love.forte.simbot.api.sender.MsgSender;
@@ -33,9 +33,9 @@ public class AddTaskListener {
     @Autowired
     private TaskMapper taskMapper;
 
-    @Qualifier("userInfoMapper")
+    @Qualifier("qqInfoMapper")
     @Autowired
-    private UserInfoMapper userInfoMapper;
+    private QqInfoMapper qqInfoMapper;
 
 
     /*
@@ -52,8 +52,8 @@ public class AddTaskListener {
                         @FilterValue("type") String type,
                         @FilterValue("str") String str){
         sender.SENDER.sendPrivateMsg(msg, "好哒~");
-        UserInfo u = userInfoMapper.findOne(
-                userInfoMapper.query().where.qqNumber().eq(msg.getAccountInfo().getAccountCodeNumber()).end()
+        QqInfo u = qqInfoMapper.findOne(
+                qqInfoMapper.query().where.qqNumber().eq(msg.getAccountInfo().getAccountCodeNumber()).end()
         );
         Task task = new Task();
         task.setRemindStr(u.getNickname()+"，"+str+"时间到了！")
@@ -72,7 +72,7 @@ public class AddTaskListener {
     }
 
 
-     /*
+    /*
      * 一次性任务添加（指定哪一天的哪一时刻）
      * {date}的{time}后提醒我{str}
      * 比如：10-11的21：05提醒我健康打卡
@@ -88,8 +88,8 @@ public class AddTaskListener {
                              @FilterValue("str") String str){
         String remind_time = time.replace("：",":");
         sender.SENDER.sendPrivateMsg(msg, "好哒~");
-        UserInfo u = userInfoMapper.findOne(
-                userInfoMapper.query().where.qqNumber().eq(msg.getAccountInfo().getAccountCodeNumber()).end()
+        QqInfo u = qqInfoMapper.findOne(
+                qqInfoMapper.query().where.qqNumber().eq(msg.getAccountInfo().getAccountCodeNumber()).end()
         );
         Task task = new Task();
         task.setRemindStr(u.getNickname()+"，"+str+"时间到了！")
@@ -126,8 +126,8 @@ public class AddTaskListener {
         boolean ff = isTime(remind_time, "HH:mm");
         if (ff) {
             sender.SENDER.sendPrivateMsg(msg, "好哒~");
-            UserInfo u = userInfoMapper.findOne(
-                    userInfoMapper.query().where.qqNumber().eq(msg.getAccountInfo().getAccountCodeNumber()).end()
+            QqInfo u = qqInfoMapper.findOne(
+                    qqInfoMapper.query().where.qqNumber().eq(msg.getAccountInfo().getAccountCodeNumber()).end()
             );
             Task task = new Task();
             task.setType(TaskTypeEnum.TASK_EVERYDAY.getType())
@@ -142,7 +142,7 @@ public class AddTaskListener {
         }
     }
 
-    /*
+   /*
     * 每个工作日任务添加
     * 每个工作日的{time}提醒我{str}
     * 比如：每个工作日的07:00提醒我健康打卡
@@ -158,8 +158,8 @@ public class AddTaskListener {
         boolean ff = isTime(remind_time, "HH:mm");
         if (ff) {
             sender.SENDER.sendPrivateMsg(msg, "好哒~");
-            UserInfo u = userInfoMapper.findOne(
-                    userInfoMapper.query().where.qqNumber().eq(msg.getAccountInfo().getAccountCodeNumber()).end()
+            QqInfo u = qqInfoMapper.findOne(
+                    qqInfoMapper.query().where.qqNumber().eq(msg.getAccountInfo().getAccountCodeNumber()).end()
             );
             Task task = new Task();
             task.setType(TaskTypeEnum.TASK_WORKDAY.getType())
@@ -174,10 +174,11 @@ public class AddTaskListener {
         }
     }
 
-    /*
-     * 每个工作日任务添加
-     * 每个工作日的{time}提醒我{str}
-     * 比如：每个工作日的07:00提醒我健康打卡
+
+     /**
+      * 周末任务添加
+     * 每个周末的{time}提醒我{str}
+     * 比如：每个周末的07:00提醒我健康打卡
      * */
     @Priority(2)
     @OnPrivate
@@ -190,8 +191,8 @@ public class AddTaskListener {
         boolean ff = isTime(remind_time, "HH:mm");
         if (ff) {
             sender.SENDER.sendPrivateMsg(msg, "好哒~");
-            UserInfo u = userInfoMapper.findOne(
-                    userInfoMapper.query().where.qqNumber().eq(msg.getAccountInfo().getAccountCodeNumber()).end()
+            QqInfo u = qqInfoMapper.findOne(
+                    qqInfoMapper.query().where.qqNumber().eq(msg.getAccountInfo().getAccountCodeNumber()).end()
             );
             Task task = new Task();
             task.setType(TaskTypeEnum.TASK_WEEKEND.getType())
@@ -205,7 +206,7 @@ public class AddTaskListener {
         }
     }
 
-/*    @OnPrivate
+    /*@OnPrivate
     public void listen(PrivateMsg msg, MsgSender sender){
         sender.SENDER.sendPrivateMsg(msg,msg.getText());
     }*/

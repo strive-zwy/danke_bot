@@ -1,7 +1,7 @@
 package com.danke.listener;
 
-import com.danke.entity.UserInfo;
-import com.danke.mapper.UserInfoMapper;
+import com.danke.entity.QqInfo;
+import com.danke.mapper.QqInfoMapper;
 import love.forte.simbot.annotation.OnFriendAddRequest;
 import love.forte.simbot.api.message.events.FriendAddRequest;
 import love.forte.simbot.api.sender.MsgSender;
@@ -18,9 +18,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class NewFriendListener {
 
-    @Qualifier("userInfoMapper")
+    @Qualifier("qqInfoMapper")
     @Autowired
-    private UserInfoMapper userInfoMapper;
+    private QqInfoMapper qqInfoMapper;
 
 
    /*
@@ -31,9 +31,9 @@ public class NewFriendListener {
         if ("你好蛋壳".equals(add.getText())) {
             sender.SETTER.setFriendAddRequest(add.getFlag(), null, true,false);
             //将新好友信息添加到数据库
-            UserInfo user = new UserInfo();
+            QqInfo user = new QqInfo();
             user.setQqNumber(add.getAccountInfo().getAccountCodeNumber());
-            userInfoMapper.saveOrUpdate(user);
+//            QqInfoMapper.saveOrUpdate(user);
         }
     }
 }

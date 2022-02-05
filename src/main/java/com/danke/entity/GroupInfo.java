@@ -62,10 +62,22 @@ public class GroupInfo extends RichEntity {
   private String gmtModified;
 
   /**
-   * 群名称
+   * 添加者的用户id （login_id）
    */
-  @TableField("group_name")
-  private String groupName;
+  @TableField("adder")
+  private Long adder;
+
+  /**
+   * 该QQ群的头像
+   */
+  @TableField("avatar")
+  private String avatar;
+
+  /**
+   * QQ群描述
+   */
+  @TableField("description")
+  private String description;
 
   /**
    * qq群号
@@ -105,6 +117,14 @@ public class GroupInfo extends RichEntity {
   @RefMethod("creatorId = id")
   public List<Task> findTaskList() {
     return super.invoke("findTaskList", true);
+  }
+
+  /**
+   * 实现定义在{@link cn.org.atool.fluent.mybatis.base.IRefs}子类Refs上
+   */
+  @RefMethod("id = adder")
+  public Login findLogin() {
+    return super.invoke("findLogin", true);
   }
 
   /**

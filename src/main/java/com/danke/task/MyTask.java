@@ -1,16 +1,14 @@
 package com.danke.task;
 
 import com.danke.entity.GroupInfo;
+import com.danke.entity.QqInfo;
 import com.danke.entity.Task;
-import com.danke.entity.UserInfo;
 import com.danke.enums.POrGEnum;
 import com.danke.enums.TaskStateEnum;
 import com.danke.enums.TaskTypeEnum;
 import com.danke.mapper.GroupInfoMapper;
+import com.danke.mapper.QqInfoMapper;
 import com.danke.mapper.TaskMapper;
-import com.danke.mapper.UserInfoMapper;
-import love.forte.simbot.api.message.results.FriendList;
-import love.forte.simbot.api.message.results.GroupList;
 import love.forte.simbot.bot.BotManager;
 import love.forte.simbot.timer.Cron;
 import love.forte.simbot.timer.EnableTimeTask;
@@ -39,9 +37,9 @@ public class MyTask {
     @Autowired
     private TaskMapper taskMapper;
 
-    @Qualifier("userInfoMapper")
+    @Qualifier("qqInfoMapper")
     @Autowired
-    private UserInfoMapper userInfoMapper;
+    private QqInfoMapper qqInfoMapper;
 
     @Qualifier("groupInfoMapper")
     @Autowired
@@ -64,9 +62,23 @@ public class MyTask {
         list_once_user.forEach(task -> {
             task.setState(TaskStateEnum.TASK_CANCELED.getState());
             taskMapper.updateById(task);
-            UserInfo u = task.findUserInfo();
+            QqInfo u = task.findQqInfo();
             botManager.getDefaultBot().getSender().SENDER.sendPrivateMsg(u.getQqNumber(), task.getRemindStr());
             System.out.println("一次性定时任务执行----用户：" + u.getQqNumber() + "---" + LocalDateTime.now().toLocalTime());
+        });
+        List<Task> list_once_group = taskMapper.listEntity(
+                taskMapper.query().where.remindDate().eq(today)
+                        .state().eq(TaskStateEnum.TASK_EXECUTE.getState())
+                        .and.pOrG().eq(POrGEnum.GROUP_TASK.getType())
+                        .and.type().eq(TaskTypeEnum.TASK_ONCE.getType())
+                        .and.remindTime().eq(time).end()
+        );
+        list_once_group.forEach(task -> {
+            task.setState(TaskStateEnum.TASK_CANCELED.getState());
+            taskMapper.updateById(task);
+            GroupInfo g = task.findGroupInfo();
+            botManager.getDefaultBot().getSender().SENDER.sendGroupMsg(g.getGroupNumber(), task.getRemindStr());
+            System.out.println("一次性定时任务执行----群：" + g.getGroupNumber() + "---" + LocalDateTime.now().toLocalTime());
         });
         List<Task> list_everyday_user = taskMapper.listEntity(
                 taskMapper.query().where
@@ -76,7 +88,7 @@ public class MyTask {
                         .and.remindTime().eq(time).end()
         );
         list_everyday_user.forEach(task -> {
-            UserInfo u = task.findUserInfo();
+            QqInfo u = task.findQqInfo();
             botManager.getDefaultBot().getSender().SENDER.sendPrivateMsg(u.getQqNumber(), task.getRemindStr());
             System.out.println("每日定时任务执行：用户---" + u.getQqNumber() + "---" + LocalDateTime.now().toLocalTime());
         });
@@ -109,7 +121,7 @@ public class MyTask {
                         .and.remindTime().eq(time).end()
         );
         list_workday_user.forEach(task -> {
-            UserInfo u = task.findUserInfo();
+            QqInfo u = task.findQqInfo();
             botManager.getDefaultBot().getSender().SENDER.sendPrivateMsg(u.getQqNumber(), task.getRemindStr());
             System.out.println("工作日定时任务执行：用户---" + u.getQqNumber() + "---" + LocalDateTime.now().toLocalTime());
         });
@@ -129,22 +141,22 @@ public class MyTask {
                         .and.remindTime().eq(time).end()
         );
         list_workday_user.forEach(task -> {
-            UserInfo u = task.findUserInfo();
+            QqInfo u = task.findQqInfo();
             botManager.getDefaultBot().getSender().SENDER.sendPrivateMsg(u.getQqNumber(), task.getRemindStr());
             System.out.println("周末定时任务执行：用户---" + u.getQqNumber() + "---" + LocalDateTime.now().toLocalTime());
         });
     }
 
-/*    @Fixed(value = 1, timeUnit = TimeUnit.HOURS, repeat = 1)
+    /*@Fixed(value = 1, timeUnit = TimeUnit.HOURS, repeat = 1)
     public void task() {
         System.out.println("执行定时任务！！！");
         FriendList friendList = botManager.getDefaultBot().getSender().GETTER.getFriendList();
         System.out.println("friendList----"+friendList.getResults().size());
         friendList.getResults().forEach(friendInfo -> {
             System.out.println(friendInfo.getAccountNickname());
-            UserInfo user = new UserInfo();
+            QqInfo user = new QqInfo();
             user.setQqNumber(friendInfo.getAccountCodeNumber());
-            userInfoMapper.save(user);
+            qqInfoMapper.save(user);
         });
         GroupList groupList = botManager.getDefaultBot().getSender().GETTER.getGroupList();
         System.out.println("groupList----"+groupList.getResults().size());

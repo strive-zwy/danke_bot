@@ -1,12 +1,12 @@
 package com.danke.listener;
 
+import com.danke.entity.QqInfo;
 import com.danke.entity.Task;
-import com.danke.entity.UserInfo;
 import com.danke.enums.POrGEnum;
 import com.danke.enums.TaskStateEnum;
 import com.danke.enums.TaskTypeEnum;
+import com.danke.mapper.QqInfoMapper;
 import com.danke.mapper.TaskMapper;
-import com.danke.mapper.UserInfoMapper;
 import com.danke.utils.TaskStrUtils;
 import love.forte.simbot.annotation.Filter;
 import love.forte.simbot.annotation.FilterValue;
@@ -35,9 +35,9 @@ public class DeleteTaskListener {
     @Autowired
     private TaskMapper taskMapper;
 
-    @Qualifier("userInfoMapper")
+    @Qualifier("qqInfoMapper")
     @Autowired
-    private UserInfoMapper userInfoMapper;
+    private QqInfoMapper qqInfoMapper;
 
 
      /*
@@ -49,8 +49,8 @@ public class DeleteTaskListener {
     public void AskAllTask(PrivateMsg msg, MsgSender sender){
         List<Task> list = taskMapper.listEntity(
                 taskMapper.query().where.creatorId().eq(
-                        userInfoMapper.findOne(
-                                userInfoMapper.query().where.qqNumber()
+                        qqInfoMapper.findOne(
+                                qqInfoMapper.query().where.qqNumber()
                                         .eq(msg.getAccountInfo().getAccountCodeNumber()).end()
                         ).getId()
                 ).state().eq(TaskStateEnum.TASK_EXECUTE.getState())
@@ -71,8 +71,8 @@ public class DeleteTaskListener {
         //查询有多少条正在执行的定时任务
         int count = taskMapper.count(
                 taskMapper.query().where.creatorId().eq(
-                        userInfoMapper.findOne(
-                                userInfoMapper.query().where.qqNumber().eq(msg.getAccountInfo().getAccountCodeNumber()).end()
+                        qqInfoMapper.findOne(
+                                qqInfoMapper.query().where.qqNumber().eq(msg.getAccountInfo().getAccountCodeNumber()).end()
                         ).getId()
                 ).and.state().eq(TaskStateEnum.TASK_EXECUTE)
                         .and.pOrG().eq(POrGEnum.USER_TASK.getType()).end()
@@ -85,8 +85,8 @@ public class DeleteTaskListener {
         int i = taskMapper.updateBy(
                 taskMapper.updater().set.state().is(TaskStateEnum.TASK_CANCELED.getState()).end()
                 .where.creatorId().eq(
-                        userInfoMapper.findOne(
-                                userInfoMapper.query().where.qqNumber().eq(msg.getAccountInfo().getAccountCodeNumber()).end()
+                        qqInfoMapper.findOne(
+                                qqInfoMapper.query().where.qqNumber().eq(msg.getAccountInfo().getAccountCodeNumber()).end()
                         ).getId()
                 ).and.pOrG().eq(POrGEnum.USER_TASK.getType()).end()
         );
@@ -98,14 +98,14 @@ public class DeleteTaskListener {
 
     /*
     * 通过 id 删除指定定时任务
-    * */
+    **/
     @OnPrivate
     @ListenBreak
     @Filter(value = "取消任务{{taskId,\\d+}}", matchType = MatchType.REGEX_MATCHES)
     public void deleteTaskById(PrivateMsg msg, MsgSender sender,
                                @FilterValue("taskId") Long taskId){
-        UserInfo u = userInfoMapper.findOne(
-                userInfoMapper.query().where.qqNumber().eq(msg.getAccountInfo().getAccountCodeNumber()).end()
+        QqInfo u = qqInfoMapper.findOne(
+                qqInfoMapper.query().where.qqNumber().eq(msg.getAccountInfo().getAccountCodeNumber()).end()
         );
         Task task = taskMapper.findOne(
                 taskMapper.query().where.id().eq(taskId)

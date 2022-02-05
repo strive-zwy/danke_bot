@@ -46,16 +46,17 @@ public class GroupKeywordListener {
         );
         if (g.getIsMonitor() == 1) {
             List<Keyword> kl = keywordMapper.listEntity(
-                    keywordMapper.query().where().groupId().eq(msg.getGroupInfo().getGroupCodeNumber())
+                    keywordMapper.query().where().groupId().eq(g.getId())
                             .state().eq(1).end()
             );
             StringBuilder kwStr = new StringBuilder("keywordList");
             for (Keyword keyword : kl) {
-                kwStr.append(",").append(keyword);
+                kwStr.append("-").append(keyword);
             }
+            String kw = kwStr.toString();
             List<String> strs = StrFenciUtils.fenci(msg.getText());
             for (String s : strs) {
-                if (kwStr.toString().contains(s)) {
+                if (kw.contains(s)) {
                     sender.SETTER.setMsgRecall(msg.getFlag());
                     sender.SENDER.sendGroupMsg(msg,"群内禁止发送此类消息！（发送三次踢出群聊）");
                     return;
@@ -64,21 +65,5 @@ public class GroupKeywordListener {
         }
 
     }
-
-    /*
-     * 添加关键词
-     * */
-    /*@OnGroup
-    @ListenBreak
-    @Filter(value = "添加关键词{{kw,[\\s\\S]+}}", atBot = true, matchType = MatchType.REGEX_FIND)
-    public void addKeyword(GroupMsg msg, MsgSender sender,
-                           @FilterValue("kw") String kw){
-        sender.SENDER.sendGroupMsg(msg,"好哒~");
-        Keyword keyword = new Keyword();
-        keyword.setGroupId(msg.getGroupInfo().getGroupCodeNumber())
-                .setKw(kw);
-        sender.SENDER.sendGroupMsg(msg,"已添加！");
-    }*/
-
 
 }

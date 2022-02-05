@@ -14,12 +14,13 @@ import java.lang.Long;
 import java.lang.Override;
 import java.lang.String;
 import java.lang.SuppressWarnings;
+import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
- * Task: 数据映射实体定义
+ * Login: 数据映射实体定义
  *
  * @author Powered By Fluent Mybatis
  */
@@ -32,10 +33,10 @@ import lombok.experimental.Accessors;
     callSuper = false
 )
 @FluentMybatis(
-    table = "task",
+    table = "login",
     suffix = ""
 )
-public class Task extends RichEntity {
+public class Login extends RichEntity {
   private static final long serialVersionUID = 1L;
 
   /**
@@ -44,63 +45,52 @@ public class Task extends RichEntity {
   private Long id;
 
   /**
+   * 用户登录后申请的API Key
    */
-  @TableField(
-      value = "gmt_create",
-      insert = "now()"
-  )
-  private String gmtCreate;
+  @TableField("api_key")
+  private String apiKey;
 
   /**
+   * 用户头像
    */
-  @TableField(
-      value = "gmt_modified",
-      insert = "now()",
-      update = "now()"
-  )
-  private String gmtModified;
+  @TableField("avatar")
+  private String avatar;
 
   /**
-   * 创建者id，个人任务是user_id,群任务是group_id
+   * 当前还能加几个QQ群
    */
-  @TableField("creator_id")
-  private Long creatorId;
+  @TableField("can_add_group_num")
+  private Integer canAddGroupNum;
 
   /**
-   * 个人任务还是群任务：0-个人任务、1-群任务
+   * 当前还能加几个QQ
    */
-  @TableField("p_or_g")
-  private Integer pOrG;
+  @TableField("can_add_qq_num")
+  private Integer canAddQqNum;
 
   /**
-   * 任务运行日期
+   * 用户登录后获取的用户地址
    */
-  @TableField("remind_date")
-  private String remindDate;
+  @TableField("location")
+  private String location;
 
   /**
-   * 提醒内容
+   * 用户登录昵称
    */
-  @TableField("remind_str")
-  private String remindStr;
+  @TableField("nickname")
+  private String nickname;
 
   /**
-   * 任务运行时间
+   * 用户权限
    */
-  @TableField("remind_time")
-  private String remindTime;
+  @TableField("role")
+  private Integer role;
 
   /**
-   * 任务状态：0-正常执行、1-已取消
+   * 用户登录获取的token
    */
-  @TableField("state")
-  private Integer state;
-
-  /**
-   * 任务类型：0-一次性任务、1-每日任务、2-工作日任务、3-周末任务、4-每周自定义任务
-   */
-  @TableField("type")
-  private Integer type;
+  @TableField("token")
+  private String token;
 
   @Override
   public Serializable findPk() {
@@ -109,32 +99,32 @@ public class Task extends RichEntity {
 
   @Override
   public final Class<? extends IEntity> entityClass() {
-    return Task.class;
+    return Login.class;
   }
 
   @Override
-  public final Task changeTableBelongTo(TableSupplier supplier) {
+  public final Login changeTableBelongTo(TableSupplier supplier) {
     return super.changeTableBelongTo(supplier);
   }
 
   @Override
-  public final Task changeTableBelongTo(String table) {
+  public final Login changeTableBelongTo(String table) {
     return super.changeTableBelongTo(table);
   }
 
   /**
    * 实现定义在{@link cn.org.atool.fluent.mybatis.base.IRefs}子类Refs上
    */
-  @RefMethod("id = creatorId")
-  public QqInfo findQqInfo() {
-    return super.invoke("findQqInfo", true);
+  @RefMethod("adder = id")
+  public List<QqInfo> findQqInfoList() {
+    return super.invoke("findQqInfoList", true);
   }
 
   /**
    * 实现定义在{@link cn.org.atool.fluent.mybatis.base.IRefs}子类Refs上
    */
-  @RefMethod("id = creatorId")
-  public GroupInfo findGroupInfo() {
-    return super.invoke("findGroupInfo", true);
+  @RefMethod("adder = id")
+  public List<GroupInfo> findGroupInfoList() {
+    return super.invoke("findGroupInfoList", true);
   }
 }

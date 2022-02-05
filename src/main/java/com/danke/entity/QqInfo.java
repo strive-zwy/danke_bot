@@ -9,7 +9,6 @@ import cn.org.atool.fluent.mybatis.base.RichEntity;
 import cn.org.atool.fluent.mybatis.functions.TableSupplier;
 import java.io.Serializable;
 import java.lang.Class;
-import java.lang.Integer;
 import java.lang.Long;
 import java.lang.Override;
 import java.lang.String;
@@ -20,7 +19,7 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
- * UserInfo: 数据映射实体定义
+ * QqInfo: 数据映射实体定义
  *
  * @author Powered By Fluent Mybatis
  */
@@ -33,10 +32,10 @@ import lombok.experimental.Accessors;
     callSuper = false
 )
 @FluentMybatis(
-    table = "user_info",
+    table = "qq_info",
     suffix = ""
 )
-public class UserInfo extends RichEntity {
+public class QqInfo extends RichEntity {
   private static final long serialVersionUID = 1L;
 
   /**
@@ -62,6 +61,24 @@ public class UserInfo extends RichEntity {
   private String gmtModified;
 
   /**
+   * 添加者的用户id （login_id）
+   */
+  @TableField("adder")
+  private Long adder;
+
+  /**
+   * 该QQ号的头像
+   */
+  @TableField("avatar")
+  private String avatar;
+
+  /**
+   * QQ描述
+   */
+  @TableField("description")
+  private String description;
+
+  /**
    * 希望被机器人喊得昵称，默认是小主
    */
   @TableField("nickname")
@@ -73,12 +90,6 @@ public class UserInfo extends RichEntity {
   @TableField("qq_number")
   private Long qqNumber;
 
-  /**
-   * 权限
-   */
-  @TableField("role")
-  private Integer role;
-
   @Override
   public Serializable findPk() {
     return this.id;
@@ -86,16 +97,16 @@ public class UserInfo extends RichEntity {
 
   @Override
   public final Class<? extends IEntity> entityClass() {
-    return UserInfo.class;
+    return QqInfo.class;
   }
 
   @Override
-  public final UserInfo changeTableBelongTo(TableSupplier supplier) {
+  public final QqInfo changeTableBelongTo(TableSupplier supplier) {
     return super.changeTableBelongTo(supplier);
   }
 
   @Override
-  public final UserInfo changeTableBelongTo(String table) {
+  public final QqInfo changeTableBelongTo(String table) {
     return super.changeTableBelongTo(table);
   }
 
@@ -105,5 +116,13 @@ public class UserInfo extends RichEntity {
   @RefMethod("creatorId = id")
   public List<Task> findTaskList() {
     return super.invoke("findTaskList", true);
+  }
+
+  /**
+   * 实现定义在{@link cn.org.atool.fluent.mybatis.base.IRefs}子类Refs上
+   */
+  @RefMethod("id = adder")
+  public Login findLogin() {
+    return super.invoke("findLogin", true);
   }
 }
