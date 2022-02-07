@@ -46,6 +46,7 @@ public class GroupTaskListener {
      **/
     @OnGroup
     @ListenBreak
+    @Priority(1)
     @Filter(value = "每天的{{time,[\\s\\S]+}}提醒大家{{str,[\\s\\S]+}}",
             atBot = true, matchType = MatchType.REGEX_FIND)
     public void addOnceTask(GroupMsg msg, MsgSender sender,
@@ -79,9 +80,13 @@ public class GroupTaskListener {
         }
     }
 
+    /*
+     * 一次性定时任务
+     * */
+
     @OnGroup
-    @Priority(1)
     @ListenBreak
+    @Priority(1)
     @Filter(value = "{{number,\\d+}}{{type,[\\s\\S]+}}后说{{str,[\\s\\S]+}}",
             atBot = true, matchType = MatchType.REGEX_FIND)
     public void addOnceTask(GroupMsg msg, MsgSender sender,
@@ -107,12 +112,9 @@ public class GroupTaskListener {
         }
         taskMapper.insert(task);
     }
-
-    /*
-     * 查询所有定时任务
-     * */
     @OnGroup
     @ListenBreak
+    @Priority(1)
     @Filter(value = "查询所有定时任务", atBot = true, matchType = MatchType.ENDS_WITH)
     public void askAllTask(GroupMsg msg, MsgSender sender){
         List<Task> list = taskMapper.listEntity(
@@ -133,6 +135,7 @@ public class GroupTaskListener {
      * */
     @OnGroup
     @ListenBreak
+    @Priority(1)
     @Filter(value = "清除所有定时任务", atBot = true, matchType = MatchType.ENDS_WITH)
     @Filter(value = "删除所有定时任务", atBot = true, matchType = MatchType.ENDS_WITH)
     public void deleteAllTask(GroupMsg msg, MsgSender sender){
@@ -173,6 +176,7 @@ public class GroupTaskListener {
      * */
     @OnGroup
     @ListenBreak
+    @Priority(1)
     @Filter(value = "取消任务{{taskId,\\d+}}", atBot = true,
             matchType = MatchType.REGEX_FIND)
     public void deleteTaskById(GroupMsg msg, MsgSender sender,

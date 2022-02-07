@@ -7,11 +7,13 @@ import com.danke.entity.GroupInfo;
 import com.danke.entity.Keyword;
 import com.danke.entity.Login;
 import com.danke.entity.QqInfo;
+import com.danke.enums.POrGEnum;
 import com.danke.exception.DataBody;
 import com.danke.exception.ResultBody;
 import com.danke.mapper.GroupInfoMapper;
 import com.danke.mapper.KeywordMapper;
 import com.danke.mapper.QqInfoMapper;
+import com.danke.mapper.TaskMapper;
 import com.danke.utils.KeyUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +47,10 @@ public class DataController {
     @Qualifier("keywordMapper")
     @Autowired
     private KeywordMapper keywordMapper;
+
+    @Qualifier("taskMapper")
+    @Autowired
+    private TaskMapper taskMapper;
 
 
     @RequestMapping(value = "/getqq", method = RequestMethod.GET)
@@ -125,10 +131,18 @@ public class DataController {
         }
         if (deleteBean.getType() == 1) {
             qqInfoMapper.deleteById(deleteBean.getId());
+            taskMapper.delete(
+                    taskMapper.defaultQuery().where.creatorId().eq(deleteBean.getId())
+                    .and.pOrG().eq(POrGEnum.USER_TASK.getType()).end()
+            );
         }else if (deleteBean.getType() == 2){
             groupInfoMapper.deleteById(deleteBean.getId());
             keywordMapper.delete(
                     keywordMapper.defaultQuery().where.groupId().eq(deleteBean.getId()).end()
+            );
+            taskMapper.delete(
+                    taskMapper.defaultQuery().where.creatorId().eq(deleteBean.getId())
+                            .and.pOrG().eq(POrGEnum.GROUP_TASK.getType()).end()
             );
         }else {
             keywordMapper.deleteById(deleteBean.getId());

@@ -25,7 +25,7 @@ public class RobotReplyListener {
     static Map<String,String> map = new HashMap<>();
 
     /*
-     * 获取机器人智能回复
+     * 获取机器人智能回复 - 私聊
      * */
     @OnPrivate
     @Priority(4)
@@ -40,7 +40,7 @@ public class RobotReplyListener {
     }
 
     /*
-     * 获取机器人智能回复
+     * 获取机器人智能回复 - 群聊
      * */
     @OnGroup
     @Priority(4)

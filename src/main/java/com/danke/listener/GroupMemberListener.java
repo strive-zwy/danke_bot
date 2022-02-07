@@ -1,6 +1,8 @@
 package com.danke.listener;
 
 import catcode.CatCodeUtil;
+import com.danke.entity.GroupInfo;
+import com.danke.mapper.GroupInfoMapper;
 import love.forte.simbot.annotation.*;
 import love.forte.simbot.api.message.containers.AccountInfo;
 import love.forte.simbot.api.message.containers.BotInfo;
@@ -9,6 +11,8 @@ import love.forte.simbot.api.message.events.GroupMsg;
 import love.forte.simbot.api.sender.MsgSender;
 import love.forte.simbot.api.sender.Setter;
 import love.forte.simbot.filter.MatchType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 
@@ -23,14 +27,16 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class GroupMemberListener {
 
+    @Qualifier("groupInfoMapper")
+    @Autowired
+    private GroupInfoMapper groupInfoMapper;
+
     @OnGroupAddRequest
     public void onRequest(GroupAddRequest groupAddRequest, Setter setter) {
-        // 此事件的“申请者”
-        AccountInfo accountInfo = groupAddRequest.getRequestAccountInfo();
-        // 收到此事件的bot
-        BotInfo botInfo = groupAddRequest.getBotInfo();
-        // 申请者的申请消息是否对上设置的暗号，对上则同意申请
-        if ("暗号".equals(groupAddRequest.getText())) {
+        GroupInfo group = groupInfoMapper.findOne(
+                groupInfoMapper.query().where.groupNumber().eq(groupAddRequest.getGroupInfo().getGroupCodeNumber()).end()
+        );
+        if (group != null) {
             setter.setGroupAddRequest(groupAddRequest.getFlag(), true, false, null);
         }
     }
@@ -40,10 +46,26 @@ public class GroupMemberListener {
      * */
     @OnGroup
     @ListenBreak
-    @Filter(value = "禁言全体成员", atBot = true, matchType = MatchType.ENDS_WITH)
-    public void addKeyword(GroupMsg msg, MsgSender sender){
+    @Priority(1)
+    @Filter(value = "全体禁言", atBot = true, matchType = MatchType.ENDS_WITH)
+    public void openWholeBan(GroupMsg msg, MsgSender sender){
         if (msg.getAccountInfo().getPermission().isOwnerOrAdmin()) {
             sender.SETTER.setGroupWholeBan(msg.getGroupInfo().getGroupCodeNumber(),true);
+            return;
+        }
+        sender.SENDER.sendGroupMsg(msg,"您不是管理员，没有权限！");
+    }
+
+    /*
+     * 禁言全体成员
+     * */
+    @OnGroup
+    @ListenBreak
+    @Priority(1)
+    @Filter(value = "关闭全体禁言", atBot = true, matchType = MatchType.ENDS_WITH)
+    public void closeWholeBan(GroupMsg msg, MsgSender sender){
+        if (msg.getAccountInfo().getPermission().isOwnerOrAdmin()) {
+            sender.SETTER.setGroupWholeBan(msg.getGroupInfo().getGroupCodeNumber(),false);
             return;
         }
         sender.SENDER.sendGroupMsg(msg,"您不是管理员，没有权限！");
@@ -54,7 +76,8 @@ public class GroupMemberListener {
      * */
     @OnGroup
     @ListenBreak
-    @Filter(value = "禁言{{qqnumber,[\\s\\S]+}}", atBot = true, matchType = MatchType.REGEX_FIND)
+    @Priority(2)
+    @Filter(value = "禁言成员{{qqnumber,[\\s\\S]+}}", atBot = true, matchType = MatchType.REGEX_FIND)
     public void addKeyword(GroupMsg msg, MsgSender sender,
                            @FilterValue("qqnumber") String qqnumber){
         if (msg.getAccountInfo().getPermission().isOwnerOrAdmin()) {
