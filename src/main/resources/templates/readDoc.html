@@ -1,0 +1,242 @@
+<!--
+  @author zwy
+  @version 1.0
+  @createTime 2022/1/27 19:51
+  @description: TODO 
+-->
+<!DOCTYPE html>
+<!--suppress ALL-->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>danke-阅读文档</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="http://zwyz.oss-cn-beijing.aliyuncs.com/community/publish/img/1638861501437.png?Expires=1954221492&OSSAccessKeyId=LTAI4GK95AhfKyxui78C1KkS&Signature=%2Bmi20Lkybycotcr%2FUCQS4PvzU60%3D" type="image/x-icon">
+    <link rel="stylesheet" href="https://unpkg.com/wenk/dist/wenk.css">
+    <link rel="stylesheet" href="/css/commen.css?v=25">
+    <link rel="stylesheet" href="https://anijs.github.io/lib/anicollection/anicollection.css" />
+    <script src="/jq/jquery_1.10.2_jquery.js"></script>
+    <script src="/js/dialog.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particlesjs/2.2.3/particles.min.js"></script>
+    <script src="https://lf1-cdn-tos.bytegoofy.com/obj/iconpark/icons_6004_3.d3d1144ab8971c928059b4071f80b945.js"></script>
+</head>
+<body>
+<section class="login-bcg">
+    <!--引入顶部导航栏-->
+    <div th:replace="~{header :: nav}"></div>
+    <section class="content">
+        <div class="con-user">
+            <span class="qq-span gj">小管家使用说明（私聊）</span><br>
+            <span class="gj-ps">( PS.请先确定要使用的QQ添加到管理台QQ列表中，并添加蛋壳</span>
+            <span id="doc-logo"></span><span class="gj-ps">【QQ:3627408049】为QQ好友 )</span><br><br>
+            <ol class="gj-ol">
+                <li>
+                    <span class="gj-header"><b>小管家定时提醒：</b></span><br><br>
+                    <ul class="gj-ul">
+                        <li>
+                            <span class="gj-title">一次性定时任务_1：向蛋壳发送：【数字】【秒/分钟/小时】后提醒我【任务】</span><br>
+                            <span class="eg">比如:</span>
+                            <div class="gj-eg">10分钟后提醒我吃药</div><br><br><br>
+                        </li>
+                        <li>
+                            <span class="gj-title">一次性定时任务_2：向蛋壳发送：【date】的【time】提醒我【任务】</span><br>
+                            <span class="eg">比如:</span>
+                            <div class="gj-eg">10-11的21:05提醒我交作业</div><br><br><br>
+                        </li>
+                        <li>
+                            <span class="gj-title">每日任务：向蛋壳发送：每天的【time】提醒我【任务】</span><br>
+                            <span class="eg">比如:</span>
+                            <div class="gj-eg">每天的07:00提醒我健康打卡</div><br><br><br>
+                        </li>
+                        <li>
+                            <span class="gj-title">每个工作日任务（周一至周五）：向蛋壳发送：每个工作日的【time】提醒我【任务】</span><br>
+                            <span class="eg">比如:</span>
+                            <div class="gj-eg">每个工作日的07:00提醒我健康打卡</div><br><br><br>
+                        </li>
+                        <li>
+                            <span class="gj-title">周末任务（周六和周日）：向蛋壳发送：每个周末的【time】提醒我【任务】</span><br>
+                            <span class="eg">比如:</span>
+                            <div class="gj-eg">每个周末的07:00提醒我浇花</div><br><br><br>
+                        </li>
+                        <li>
+                            <span class="gj-title">查询已经开启的定时任务：向蛋壳发送：查询所有定时任务</span><br>
+                            <span class="eg">比如:</span>
+                            <div class="gj-eg">查询所有定时任务</div><br><br><br>
+                        </li>
+                        <li>
+                            <span class="gj-title">删除某个定时任务：先发送查询命令，然后蛋壳会返回每个任务的id,最后向蛋壳发送：删除任务【id】</span><br>
+                            <span class="eg">比如:</span>
+                            <div class="gj-eg">删除任务12</div><br><br><br>
+                        </li>
+                        <li>
+                            <span class="gj-title">删除所有定时任务：向蛋壳发送：删除/清除所有定时任务</span><br>
+                            <span class="eg">比如:</span>
+                            <div class="gj-eg">删除所有定时任务</div><div class="gj-eg">清除所有定时任务</div><br><br><br><br>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <span class="gj-header"><b>天气查询：</b></span><br><br>
+                    <ul class="gj-ul">
+                        <li>
+                            <span class="gj-title">当天天气查询：向蛋壳发送：【城市】天气/【城市】今日天气</span><br>
+                            <span class="eg">比如:</span>
+                            <div class="gj-eg">郑州天气</div><div class="gj-eg">郑州今日天气</div><br><br><br>
+                        </li>
+                        <li>
+                            <span class="gj-title">明日天气查询：向蛋壳发送：【城市】明日天气</span><br>
+                            <span class="eg">比如:</span>
+                            <div class="gj-eg">郑州明日天气</div><br><br><br>
+                        </li>
+                        <li>
+                            <span class="gj-title">获取未来天气（三天）：向蛋壳发送：【城市】未来天气</span><br>
+                            <span class="eg">比如:</span>
+                            <div class="gj-eg">郑州未来天气</div><br><br><br>
+                        </li>
+                        <li>
+                            <span class="gj-title">获取未来五天天气：向蛋壳发送：【城市】未来五天天气</span><br>
+                            <span class="eg">比如:</span>
+                            <div class="gj-eg">郑州未来五天天气</div><br><br><br><br>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <span class="gj-header"><b>发送邮件：</b></span><br><br>
+                    <ul class="gj-ul">
+                        <li>
+                            <span class="gj-title">向某邮箱发送邮件（目前只支持发送文字，不支持附件）：向蛋壳发送：向【Email】发送【内容】</span><br>
+                            <span class="eg">比如:</span>
+                            <div class="gj-eg">向123@163.com发送你好</div><br><br><br><br>
+                        </li>
+
+                    </ul>
+                </li>
+                <li>
+                    <span class="gj-header"><b>陪您聊天：</b></span><br><br>
+                    <ul class="gj-ul">
+                        <li>
+                            <span class="gj-title">向蛋壳发送除命令以外的消息，蛋壳将会陪您聊天</span><br>
+                            <span class="eg">比如:</span>
+                            <div class="gj-eg">你好啊</div><div class="gj-eg">你多大了</div><br><br><br>
+                        </li>
+
+                    </ul>
+                </li>
+
+            </ol>
+        </div>
+
+        <div class="con-user con-apikey">
+            <span class="qq-span gj">小管家使用说明（群聊）</span><br>
+            <span class="gj-ps">( PS.请先确定要使用的QQ群是否添加到管理台QQ列表中，并将蛋壳</span>
+            <span id="doc-logo"></span><span class="gj-ps">【QQ:3627408049】拉入群中 )</span>
+            <br><br>
+            <ol class="gj-ol">
+                <li>
+                    <span class="gj-header"><b>小管家定时提醒（仅有管理员权限可以使用该命令）：</b></span><br><br>
+                    <ul class="gj-ul">
+                        <li>
+                            <span class="gj-title">一次性定时任务：在群里艾特蛋壳并说：【数字】【秒/分钟/小时】后说【任务】</span><br>
+                            <span class="eg">比如:</span>
+                            <div class="gj-eg">@蛋壳10分钟后说吃饭啦！！</div><br><br><br>
+                        </li>
+                        <li>
+                            <span class="gj-title">每日任务：在群里艾特蛋壳并说：每天的【time】提醒大家【任务】</span><br>
+                            <span class="eg">比如:</span>
+                            <div class="gj-eg">@蛋壳每天的07:00提醒大家健康打卡</div><br><br><br>
+                        </li>
+                        <li>
+                            <span class="gj-title">查询已经开启的定时任务：在群里艾特蛋壳并说：查询所有定时任务</span><br>
+                            <span class="eg">比如:</span>
+                            <div class="gj-eg">@蛋壳查询所有定时任务</div><br><br><br>
+                        </li>
+                        <li>
+                            <span class="gj-title">删除某个定时任务：先发送查询命令，然后蛋壳会返回每个任务的id,最后在群里艾特蛋壳并说：删除任务【id】</span><br>
+                            <span class="eg">比如:</span>
+                            <div class="gj-eg">@蛋壳删除任务12</div><br><br><br>
+                        </li>
+                        <li>
+                            <span class="gj-title">删除所有定时任务：在群里艾特蛋壳并说：删除/清除所有定时任务</span><br>
+                            <span class="eg">比如:</span>
+                            <div class="gj-eg">@蛋壳删除所有定时任务</div><div class="gj-eg">@蛋壳清除所有定时任务</div><br><br><br><br>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <span class="gj-header"><b>陪您聊天：</b></span><br><br>
+                    <ul class="gj-ul">
+                        <li>
+                            <span class="gj-title">艾特蛋壳并发送除命令以外的消息，蛋壳将会陪您聊天</span><br>
+                            <span class="eg">比如:</span>
+                            <div class="gj-eg">@蛋壳你好啊</div><div class="gj-eg">@蛋壳你多大了</div><br><br><br>
+                        </li>
+
+                    </ul>
+                </li>
+
+            </ol>
+        </div>
+
+        <div class="con-user con-apikey">
+            <span class="qq-span gj">API 接口使用说明</span><br>
+            <span class="gj-ps">( PS.请先确定要使用的QQ添加到管理台QQ列表中，并添加蛋壳</span>
+            <span id="doc-logo"></span><span class="gj-ps">【QQ:3627408049】为QQ好友 )</span><br><br>
+            <span class="eg">请求地址：</span>
+            <div class="gj-eg">http://www.dankebot.top/api/postMessage/你的 key/QQ?message=发送的内容</div><br><br>
+            <span class="eg">请求方式：</span>
+            <div class="gj-eg">POST</div><br><br><br><br>
+            <span class="eg">比如：</span>
+            <div class="gj-eg">http://www.dankebot.top/api/postMessage/44812a46dcea4dbda06297ddff5228f2/</div><br>
+            <div class="gj-eg">1228304424?message=你好</div><br><br>
+        </div>
+        <div class="footer footer-con">
+            <p>Copyright © 2022 dankebot.top</p>
+            <p><a class="beian" href="http://beian.miit.gov.cn/">豫ICP备2021037847号</a></p>
+        </div>
+    </section>
+</section>
+<canvas class="background"></canvas>
+</body>
+<script>
+    window.onload = function () {
+        Particles.init({
+            selector: ".background"
+        });
+    };
+    var particles = Particles.init({
+        selector: ".background",
+        color: ["#4672fe", "#ff0266", "#000000"],
+        connectParticles: true,
+        responsive: [
+            {
+                breakpoint: 768,
+                options: {
+                    color: ["#faebd7", "#4672fe", "#ff0266"],
+                    maxParticles: 243,
+                    connectParticles: false
+                }
+            }
+        ]
+    });
+
+    function  ScollPostion() {//滚动条位置
+        var t;
+        if (document.documentElement && document.documentElement.scrollTop) {
+            t = document.documentElement.scrollTop;
+        } else if (document.body) {
+            t = document.body.scrollTop;
+        }
+        return t;
+    }
+    window.onscroll=function(e){
+        var top = ScollPostion();
+        var obj = document.getElementById("header-all");
+        if (top > 65) {
+            obj.style.backgroundColor = "rgba(30,31,38,0.2)"
+        }else {
+            obj.style.backgroundColor = "#1e1f26";
+        }
+    }
+</script>
+</html>

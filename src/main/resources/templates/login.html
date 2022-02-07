@@ -1,0 +1,70 @@
+<!--
+  @author zwy
+  @version 1.0
+  @createTime 2022/1/20 16:34
+  @description: 登录页面
+-->
+<!DOCTYPE html>
+<!--suppress ALL-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="http://zwyz.oss-cn-beijing.aliyuncs.com/community/publish/img/1638861501437.png?Expires=1954221492&OSSAccessKeyId=LTAI4GK95AhfKyxui78C1KkS&Signature=%2Bmi20Lkybycotcr%2FUCQS4PvzU60%3D" type="image/x-icon">
+    <link rel="stylesheet" href="/css/commen.css?v=25">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://anijs.github.io/lib/anicollection/anicollection.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particlesjs/2.2.3/particles.min.js"></script>
+</head>
+<body>
+<section class="login-bcg">
+    <!--引入顶部导航栏-->
+    <div th:replace="~{header :: nav}"></div>
+    <section class="content">
+        <a class="login" href="/ceshi" data-anijs="if: mouseover, do: tada animated">
+            <div id="qq-logo"></div>
+            <span>使用QQ账号登录</span>
+        </a>
+        <div class="con-xieyi">
+            <p class="con-h1"><b>服务使用协议</b></p>
+            <p class="con-h2">当您使用本网站服务时：</p>
+            <p class="con-p">1、请不要用本站服务发送不符合社会主义核心价值观的消息。</p>
+            <p class="con-p">2、使用本站服务即默认同意本网站保留有对你在本平台账号的所有管理权利。</p>
+            <p class="con-p">3、你的一切行为即你的主观操作与本平台无关。</p>
+        </div>
+        <div class="footer">
+            <p>Copyright © 2022 dankebot.top</p>
+            <p><a class="beian" href="http://beian.miit.gov.cn/">豫ICP备2021037847号</a></p>
+        </div>
+    </section>
+</section>
+<canvas class="background"></canvas>
+
+</body>
+<script src="https://anijs.github.io/lib/anijs/anijs.js"></script>
+<script src="https://anijs.github.io/lib/anijs/helpers/scrollreveal/anijs-helper-scrollreveal.js"></script>
+<script type="text/javascript">
+
+    window.onload = function () {
+        Particles.init({
+            selector: ".background"
+        });
+    };
+    var particles = Particles.init({
+        selector: ".background",
+        color: ["#4672fe", "#ff0266", "#000000"],
+        connectParticles: true,
+        responsive: [
+            {
+                breakpoint: 768,
+                options: {
+                    color: ["#faebd7", "#4672fe", "#ff0266"],
+                    maxParticles: 243,
+                    connectParticles: false
+                }
+            }
+        ]
+    });
+</script>
+</html>

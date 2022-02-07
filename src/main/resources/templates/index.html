@@ -1,0 +1,219 @@
+<!--
+  @author zwy
+  @version 1.0
+  @createTime 2022/1/18 18:56
+  @description: danke-bot主页
+-->
+<!DOCTYPE html>
+<!--suppress ALL-->
+<html lang="en">
+<head>
+    <title>danke-bot主页</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="http://zwyz.oss-cn-beijing.aliyuncs.com/community/publish/img/1638861501437.png?Expires=1954221492&OSSAccessKeyId=LTAI4GK95AhfKyxui78C1KkS&Signature=%2Bmi20Lkybycotcr%2FUCQS4PvzU60%3D" type="image/x-icon">
+    <link rel="stylesheet" href="/css/index.css?v=3">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@200;300;400;500&family=Raleway:wght@100;200;300;400;500&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://anijs.github.io/lib/anicollection/anicollection.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particlesjs/2.2.3/particles.min.js"></script>
+</head>
+<body>
+<section class="nav">
+    <h1>danke-bot</h1>
+    <h3 class="span loader">
+        <span class='m'>一</span>
+        <span class='m'>款</span>
+        <span class='m'>多</span>
+        <span class='m'>功</span>
+        <span class='m'>能</span>
+        <span class='m'>的</span>
+        <span class='m'>Q</span>
+        <span class='m'>Q</span>
+        <span class='m'>机</span>
+        <span class='m'>器</span>
+        <span class='m'>人</span>
+        <span class='m'>管</span>
+        <span class='m'>家</span>
+    </h3>
+    <a href="/login" class="touse" data-anijs="if: mouseover, do: tada animated">开始使用</a>
+    <div class="nav-container">
+        <a class="nav-tab" href="#tab-pwa">简介</a>
+        <a class="nav-tab" href="#tab-graphql">管家功能</a>
+        <a class="nav-tab" href="#tab-next">API接口调用</a>
+        <span class="nav-tab-slider"></span>
+    </div>
+</section>
+<main class="main">
+    <section class="slider" id="tab-pwa">
+        <div class="danke" data-anijs="if: mouseenter, do: bounce animated">
+            <div class="danke-r">
+                <img id="jianjie_logo"  data-anijs="if: mouseover, do: rubberBand animated"
+                     src="http://zwyz.oss-cn-beijing.aliyuncs.com/community/publish/img/1638861501437.png?Expires=1954221492&OSSAccessKeyId=LTAI4GK95AhfKyxui78C1KkS&Signature=%2Bmi20Lkybycotcr%2FUCQS4PvzU60%3D" alt="蛋壳本壳">
+            </div>
+            <div class="danke-l">
+                <p><span class="danke-l-l">姓名：</span><span class="danke-l-r">蛋壳</span></p><br>
+                <p><span class="danke-l-l">年龄：</span><span class="danke-l-r">不到一岁</span></p><br>
+                <p><span class="danke-l-l">爱好：</span><span class="danke-l-r">睡觉、干饭</span></p><br>
+                <p><span class="danke-l-l">工作：</span><span class="danke-l-r">为你服务挣取电费</span></p>
+            </div>
+        </div>
+    </section>
+    <section class="slider" id="tab-graphql">
+        <h1>管家功能</h1>
+        <h2>为您提供贴心的服务</h2>
+        <h2>开启定时任务、查询天气、发送邮件、QQ群管理</h2>
+        <h2>成为您QQ上的好帮手</h2>
+    </section>
+    <section class="slider" id="tab-next">
+        <h1>API接口调用</h1>
+        <h2>通过API接口调用来向您的QQ上发送消息</h2>
+        <h2>您的专属QQ消息推送工具</h2>
+    </section>
+    <div class="footer">
+        <p>Copyright © 2022 dankebot.top</p>
+        <p><a class="beian" href="http://beian.miit.gov.cn/">豫ICP备2021037847号</a></p>
+    </div>
+</main>
+<canvas class="background"></canvas>
+</body>
+<script src="https://anijs.github.io/lib/anijs/anijs.js"></script>
+<script src="https://anijs.github.io/lib/anijs/helpers/scrollreveal/anijs-helper-scrollreveal.js"></script>
+<script type="text/javascript">
+
+window.onload = function () {
+    Particles.init({
+        selector: ".background"
+    });
+};
+var particles = Particles.init({
+    selector: ".background",
+    color: ["#4672fe", "#ff0266", "#000000"],
+    connectParticles: true,
+    responsive: [
+        {
+            breakpoint: 768,
+            options: {
+                color: ["#faebd7", "#4672fe", "#ff0266"],
+                maxParticles: 243,
+                connectParticles: false
+            }
+        }
+    ]
+});
+
+class NavigationPage {
+    constructor() {
+        this.currentId = null;
+        this.currentTab = null;
+        this.tabContainerHeight = 70;
+        this.lastScroll = 0;
+        let self = this;
+        $(".nav-tab").click(function () {
+            self.onTabClick(event, $(this));
+        });
+        $(window).scroll(() => {
+            this.onScroll();
+        });
+        $(window).resize(() => {
+            this.onResize();
+        });
+    }
+
+    onTabClick(event, element) {
+        event.preventDefault();
+        let scrollTop =
+            $(element.attr("href")).offset().top - this.tabContainerHeight + 1;
+        $("html, body").animate({ scrollTop: scrollTop }, 600);
+    }
+
+    onScroll() {
+        this.checkHeaderPosition();
+        this.findCurrentTabSelector();
+        this.lastScroll = $(window).scrollTop();
+    }
+
+    onResize() {
+        if (this.currentId) {
+            this.setSliderCss();
+        }
+    }
+
+    checkHeaderPosition() {
+        const headerHeight = 75;
+        if ($(window).scrollTop() > headerHeight) {
+            $(".header").addClass("header--scrolled");
+        } else {
+            $(".header").removeClass("header--scrolled");
+        }
+        let offset =
+            $(".nav").offset().top +
+            $(".nav").height() -
+            this.tabContainerHeight -
+            headerHeight;
+        if (
+            $(window).scrollTop() > this.lastScroll &&
+            $(window).scrollTop() > offset
+        ) {
+            $(".header").addClass("et-header--move-up");
+            $(".nav-container").removeClass("nav-container--top-first");
+            $(".nav-container").addClass("nav-container--top-second");
+        } else if (
+            $(window).scrollTop() < this.lastScroll &&
+            $(window).scrollTop() > offset
+        ) {
+            $(".header").removeClass("et-header--move-up");
+            $(".nav-container").removeClass("nav-container--top-second");
+            $(".et-hero-tabs-container").addClass(
+                "et-hero-tabs-container--top-first"
+            );
+        } else {
+            $(".header").removeClass("header--move-up");
+            $(".nav-container").removeClass("nav-container--top-first");
+            $(".nav-container").removeClass("nav-container--top-second");
+        }
+    }
+
+    findCurrentTabSelector(element) {
+        let newCurrentId;
+        let newCurrentTab;
+        let self = this;
+        $(".nav-tab").each(function () {
+            let id = $(this).attr("href");
+            let offsetTop = $(id).offset().top - self.tabContainerHeight;
+            let offsetBottom =
+                $(id).offset().top + $(id).height() - self.tabContainerHeight;
+            if (
+                $(window).scrollTop() > offsetTop &&
+                $(window).scrollTop() < offsetBottom
+            ) {
+                newCurrentId = id;
+                newCurrentTab = $(this);
+            }
+        });
+        if (this.currentId != newCurrentId || this.currentId === null) {
+            this.currentId = newCurrentId;
+            this.currentTab = newCurrentTab;
+            this.setSliderCss();
+        }
+    }
+
+    setSliderCss() {
+        let width = 0;
+        let left = 0;
+        if (this.currentTab) {
+            width = this.currentTab.css("width");
+            left = this.currentTab.offset().left;
+        }
+        $(".nav-tab-slider").css("width", width);
+        $(".nav-tab-slider").css("left", left);
+    }
+}
+
+new NavigationPage();
+</script>
+</html>

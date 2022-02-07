@@ -1,0 +1,552 @@
+<!--
+  @author zwy
+  @version 1.0
+  @createTime 2022/1/22 20:08
+  @description: danke-管理台
+-->
+<!DOCTYPE html>
+<!--suppress ALL-->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>danke-管理台</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="http://zwyz.oss-cn-beijing.aliyuncs.com/community/publish/img/1638861501437.png?Expires=1954221492&OSSAccessKeyId=LTAI4GK95AhfKyxui78C1KkS&Signature=%2Bmi20Lkybycotcr%2FUCQS4PvzU60%3D" type="image/x-icon">
+    <link rel="stylesheet" href="https://unpkg.com/wenk/dist/wenk.css">
+    <link rel="stylesheet" href="/css/commen.css?v=24">
+    <link rel="stylesheet" href="https://anijs.github.io/lib/anicollection/anicollection.css" />
+    <script src="/jq/jquery_1.10.2_jquery.js"></script>
+    <script src="/js/dialog.js"></script>
+    <script src="/js/coco-modal.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particlesjs/2.2.3/particles.min.js"></script>
+    <script src="https://lf1-cdn-tos.bytegoofy.com/obj/iconpark/icons_6004_7.e001351f47e5c3da2f0d6fcf091f52be.js"></script>
+</head>
+<body>
+<section class="login-bcg">
+    <!--引入顶部导航栏-->
+    <div th:replace="~{header :: nav}"></div>
+    <section class="content">
+        <div class="con-user">
+            <img th:src="${session.login.avatar}" th:alt="${session.login.nickname}" class="con-user-avatar"/>
+            <div class="con-user-info">
+                <b><span class="con-uname" th:text="${session.login.nickname}"></span></b>
+                <a class="con-logout" href="/logout">退出登录</a>
+                <div class="con-key">
+                    <span>API-KEY：<span class="con-span-key" data-wenk="点击复制" data-wenk-pos="top" id="apiKey" th:text="${session.login.apiKey}" onclick="copy()"></span>
+                        <span class="con-btn" id="reset" data-wenk="点击重置 key" onclick="getKey()" data-wenk-pos="right">
+                            <iconpark-icon color="#1E9FFF" class="con-icon" size="24" name="refresh"></iconpark-icon></span>
+                    </span>
+                    <p class="con-key-p">为避免有人恶意使用后造成信息轰炸，请不要泄露您的 key</p>
+                </div>
+                <div class="con-other">
+                    <span class="con-span" >还可以添加<b><span class="con-b" th:text="${session.login.canAddQqNum}"></span></b>个QQ/共<span class="con-b">5</span>个</span>
+                    <span class="con-span" >还可以添加<b><span class="con-b" th:text="${session.login.canAddGroupNum}"></span></b>个QQ群/共<span class="con-b">2</span>个</span>
+                </div>
+            </div>
+        </div>
+        <div class="con-user con-qq">
+            <span class="qq-span">QQ 列表</span>
+            <button class="qq-btn qq-btn-qq" onclick="addQQ()">添加QQ</button>
+            <button class="qq-btn qq-btn-group" onclick="addGroup()">添加QQ群</button>
+            <ul class="list-qq" id="qqlist">
+
+            </ul>
+        </div>
+        <div class="con-user con-api">
+            <span class="qq-span">在线发送工具</span>(发送前请先确定要发送的QQ添加到上方列表中，并添加蛋壳为QQ好友)
+            <div class="api-url">
+                <span class="api-span">发送 QQ: </span>
+                <input class="api-input" id="sendQQ"><br><br>
+                <span class="api-span">发送内容: </span><br>
+                <textarea class="api-text" id="sendStr"></textarea>
+                <button class="qq-btn api-btn" onclick="sendMessage()">发送</button>
+            </div>
+
+        </div>
+        <div class="footer footer-con">
+            <p>Copyright © 2022 dankebot.top</p>
+            <p><a class="beian" href="http://beian.miit.gov.cn/">豫ICP备2021037847号</a></p>
+        </div>
+    </section>
+</section>
+<canvas class="background"></canvas>
+</body>
+<div id="addqq" style="display: none">
+    <div>
+        <input id="qq" type="text" class="coco-input" placeholder="请输入QQ号">
+    </div>
+    <div>
+        <input id="qqdesc" type="text" class="coco-input" placeholder="请输入QQ号描述">
+    </div>
+</div>
+<div id="addgroup" style="display: none">
+    <div>
+        <input id="group" type="text" class="coco-input" placeholder="请输入QQ群号">
+    </div>
+    <div>
+        <input id="groupDesc" type="text" class="coco-input" placeholder="请输入QQ群号描述">
+    </div>
+</div>
+<div id="monistorInfo" style="display: none">
+    <div id="m-info">
+
+    </div>
+    <br>
+    <ul class="list-kw" id="kwlist">
+
+    </ul>
+</div>
+<script src="https://anijs.github.io/lib/anijs/anijs.js"></script>
+<script src="https://anijs.github.io/lib/anijs/helpers/scrollreveal/anijs-helper-scrollreveal.js"></script>
+<script type="text/javascript" language="JavaScript" th:inline="javascript">
+    var login ;
+    function getLogin() {
+        login = [[${session.login}]];
+        console.log(login);
+    }
+    getLogin();
+    getqq();
+    function getKey() {
+        $.ajax({
+            type: "GET",
+            dataType: "json",
+            url: "/api/getKey",
+            contentType : "application/json",
+            success: function (response) {
+                if (response.code === "200") {
+                    getLogin();
+                    $("#apiKey").text(response.result);
+                    login.apiKey = response.result;
+                    msg("重置成功!");
+                }else {
+                    msg("重置失败，请重试。");
+                }
+            }
+        })
+    }
+    window.onload = function () {
+        Particles.init({
+            selector: ".background"
+        });
+    };
+    var particles = Particles.init({
+        selector: ".background",
+        color: ["#4672fe", "#ff0266", "#000000"],
+        connectParticles: true,
+        responsive: [
+            {
+                breakpoint: 768,
+                options: {
+                    color: ["#faebd7", "#4672fe", "#ff0266"],
+                    maxParticles: 243,
+                    connectParticles: false
+                }
+            }
+        ]
+    });
+    function  ScollPostion() {//滚动条位置
+        var t;
+        if (document.documentElement && document.documentElement.scrollTop) {
+            t = document.documentElement.scrollTop;
+        } else if (document.body) {
+            t = document.body.scrollTop;
+        }
+        return t;
+    }
+    window.onscroll=function(e){
+        var top = ScollPostion();
+        var obj = document.getElementById("header-all");
+        if (top > 65) {
+            obj.style.backgroundColor = "rgba(30,31,38,0.2)"
+        }else {
+            obj.style.backgroundColor = "#1e1f26";
+        }
+    }
+    function getqq(){
+        $.ajax({
+            type: "GET",
+            dataType: "json",
+            url: "/data/getqq",
+            contentType : "application/json",
+            success: function (response) {
+                data = response.result;
+                var dataStr = "";
+                for (var i = 0;i < data.length;i++) {
+                    dataStr+= "<li class='list-li'>\n" +
+                        "                    <img src='"+data[i].avatar+"' class='li-avatar'>\n" +
+                        getBadge(data[i].type)+
+                        "                    <div>"+data[i].qq+"</div>\n" +
+                        "                    <div>"+data[i].description+"</div>\n" +
+                        "                    <div>\n" +
+                                                getType(data[i].id,data[i].type,data[i].isMonitor)+
+                        "                    </div>\n" +
+                        "                </li>";
+                }
+                // console.log(dataStr);
+                $("#qqlist").html(dataStr);
+            }
+        })
+    }
+    function getKlist(id,isMonitor){
+        $.ajax({
+            type: "GET",
+            dataType: "json",
+            url: "/data/getKlist?id="+id,
+            contentType : "application/json",
+            success: function (response) {
+                data = response.result;
+                var dataStr = "<li class='kw-li kw-li-h'>\n" +
+                    "            <div>关键词</div>\n" +
+                    "            <div>状态</div>\n" +
+                    "            <div>操作</div>\n" +
+                    "        </li>";
+                for (var i = 0;i < data.length;i++) {
+                    dataStr+= "<li class='kw-li'>\n" +
+                        "                    <div>"+data[i].kw+"</div>\n" +
+                        "                    <div>"+state(data[i].state)+"</div>\n" +
+                        "                    <div>\n" +
+                        "<iconpark-icon color='#f20003' class='kw-icon'  onclick='deleteqq("+data[i].id+","+3+")' " +
+                        "size='12' name='delete'></iconpark-icon>"+
+                        getKwState(data[i].id,isMonitor,data[i].state)
+                        "                    </div>\n" +
+                        "                </li>";
+                }
+                $("#m-info").html(upMinfo(id,isMonitor));
+                $("#kwlist").html(dataStr);
+            }
+
+        })
+    }
+    function getKwState(id,isMonitor,state){
+        var str;
+        if (state === 1) {
+            str = "<iconpark-icon color='#f20003' onclick='updateKwState("+id+","+isMonitor+", \"确定暂停此监听关键词吗？\")' " +
+                "size='12' name='play' class='kw-icon'></iconpark-icon>";
+        }else {
+            str = "<iconpark-icon color='#1E9FFF' onclick='updateKwState("+id+","+isMonitor+", \"确定开启使用此监听关键词吗？\")' " +
+                "size='12' name='pause-one' class='kw-icon'></iconpark-icon>";
+        }
+        return str;
+    }
+    function updateKwState(id,isMonitor, str) {
+        coco({
+            title: str,
+            okText: "确定",
+            blur: true,
+            maskClose: false,
+            escClose: false
+        }).onClose((ok, cc, done) => {
+            if (ok) {
+                done();
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "/data/updateKwState?id="+id,
+                    success: function (response) {
+                        if (response.code === "200") {
+                            getKlist(id,isMonitor)
+                            msg("操作成功！");
+                        }else {
+                            msg("操作失败！");
+                        }
+                    }
+                })
+
+            } else {
+                done();
+            }
+        });
+
+    }
+    function upMinfo(id,isMonitor){
+        var state = (isMonitor === 1)? "正在监听" : "已暂停监听";
+        var minfo = "<div>监控状态："+  state +"</div>\n" +
+            "        <div>" +
+            getMinfo(id,isMonitor) +
+            "</div>";
+        return minfo;
+    }
+    function getMinfo(id,isMonitor){
+        var str;
+        if (isMonitor === 1) {
+            str = "<iconpark-icon color='#f20003' onclick='updateMonistor("+id+", \"确定关闭监听吗？\")' " +
+                "size='18' name='play' class='min-icon'></iconpark-icon>";
+        }else {
+            str = "<iconpark-icon color='#1E9FFF' onclick='updateMonistor("+id+", \"确定开启监听吗？\")' " +
+            "size='18' name='pause-one' class='min-icon'></iconpark-icon>";
+        }
+        str += "<iconpark-icon color='#1E9FFF' onclick='addKeyword("+id+","+isMonitor+")' " +
+            "size='18' name='add-one' class='min-icon'></iconpark-icon>";
+        return str;
+    }
+    function state(state){
+        var str;
+        if (state === 1) {
+            str = "正在使用";
+        }else {
+            str = "暂停使用";
+        }
+        return str;
+    }
+    function getBadge(type) {
+        var str = "";
+        if (type ===  1) {
+            str = "<span class='list-span list-span-qq'>QQ号</span>"
+        }else {
+            str = "<span class='list-span list-span-group'>QQ群</span>"
+        }
+        return str;
+    }
+    function getType(id,type,isMonitor) {
+        var str = "";
+        if (type ===  1) {
+            str = "<iconpark-icon color='#f20003' class='list-icon'  onclick='deleteqq("+id+","+type+")' " +
+                "size='18' name='delete'></iconpark-icon>"
+        }else {
+            str = "<iconpark-icon color='#f20003' class='list-icon'  onclick='deleteqq("+id+","+type+")' " +
+                "size='18' name='delete'></iconpark-icon>" +
+                "<iconpark-icon color='#1E9FFF' class='list-icon'  onclick='monistorInfo("+id+","+isMonitor+")' " +
+                " size='18' name='surveillance-cameras-one'></iconpark-icon>"
+        }
+        return str;
+    }
+    function addKeyword(id,isMonitor) {
+        coco({
+            title: "添加关键词",
+            inputAttrs: {
+                placeholder: "输入监听关键词",
+            },
+        }).onClose((ok, cc, done) => {
+            console.log(cc.closeType);
+            if (ok) {
+                if (cc.inputValue.trim() === "") {
+                    cc.setErrorText("输入不能为空！");
+                } else {
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "/data/add",
+                        contentType : "application/json",
+                        data : JSON.stringify({
+                            "loginId" : login.id,
+                            "qq" : id,
+                            "description" : cc.inputValue,
+                            "type" : 3
+                        }),
+                        success: function (response) {
+                            if (response.code === "200") {
+                                msg("添加成功!");
+                                getKlist(id,isMonitor);
+                            }
+                        }
+                    });
+                    done();
+                    cc.inputEl.value = "";
+                }
+            } else {
+                done();
+            }
+        });
+
+    }
+    function monistorInfo(id,isMonitor) {
+        getKlist(id,isMonitor);
+        coco({
+            title: "群监控信息",
+            el: "#monistorInfo",
+            okText: "确定",
+            blur: true,
+            maskClose: false,
+            escClose: false
+        });
+    }
+    function deleteqq(id, type) {
+        coco({
+            title: "确定删除么？",
+            okText: "确定",
+            blur: true,
+            maskClose: false,
+            escClose: false
+        }).onClose((ok, cc, done) => {
+            if (ok) {
+                done();
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "/data/delete",
+                    contentType : "application/json",
+                    data : JSON.stringify({
+                        "id" : id,
+                        "type" : type
+                    }),
+                    success: function (response) {
+                        if (response.code === "200") {
+                            msg("删除成功");
+                            if (type === 3){
+                                getKlist(id,isMonitor);
+                            }else {
+                                getqq();
+                            }
+                        }else {
+                            msg("删除失败");
+                        }
+                    }
+                })
+            } else {
+                done();
+            }
+        });
+    }
+    function updateMonistor (id, str) {
+        coco({
+            title: str,
+            okText: "确定",
+            blur: true,
+            maskClose: false,
+            escClose: false
+        }).onClose((ok, cc, done) => {
+            if (ok) {
+                done();
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "/data/updateMonistor?id="+id,
+                    success: function (response) {
+                        if (response.code === "200") {
+                            msg("操作成功！");
+                            $("#m-info").html(upMinfo(id,response.result));
+                        }else {
+                            msg("操作失败！");
+                        }
+                    }
+                })
+            } else {
+                done();
+            }
+        });
+    }
+
+/*  ----- 复制 Key -----  */
+    function copy(){
+        var text =document.getElementById("apiKey").innerText;
+        var input = document.createElement('input'); input.setAttribute('id', 'copyInput');
+        input.setAttribute('value', text);
+        document.getElementsByTagName('body')[0].appendChild(input);
+        document.getElementById('copyInput').select();
+        document.execCommand('copy');
+        msg('复制成功');
+        document.getElementById('copyInput').remove();
+    }
+    /*----- 弹框 -----*/
+    function msg(message) {
+        coco({
+            header: false,
+            footer: false,
+            text: message,
+        });
+
+    }
+
+    function add(qq,description,type) {
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/data/add",
+            contentType : "application/json",
+            data : JSON.stringify({
+                "loginId" : login.id,
+                "qq" : qq,
+                "description" : description,
+                "type" : type
+            }),
+            success: function (response) {
+                if (response.code === "200") {
+                    msg("添加成功!");
+                    getqq()
+                }
+            }
+        })
+    }
+    /*----- 添加QQ -----*/
+    function addQQ() {
+        let qq =  document.body.querySelector("#qq");
+        let description = document.body.querySelector("#qqdesc");
+        coco({
+            title: "添加QQ号",
+            el: "#addqq",
+            okText: "提交",
+            blur: true,
+            maskClose: false,
+            escClose: false,
+            hooks: {
+                closed() {
+                    $("#qq").val("");
+                    $("#qqdesc").val("");
+                }
+            }
+        }).onClose((ok, cc, done) => {
+            if (ok) {
+                if (qq.value.trim() !== "") {
+                    done();
+                    add(qq.value,description.value,1)
+                } else {
+                    cc.setErrorText("QQ号输入不能为空！");
+                }
+            } else {
+                done();
+            }
+        });
+    }
+    /*----- 添加QQ群 -----*/
+    function addGroup() {
+        let qq =  document.body.querySelector("#group");
+        let description = document.body.querySelector("#groupDesc");
+        coco({
+            title: "添加QQ群",
+            el: "#addgroup",
+            okText: "提交",
+            blur: true,
+            maskClose: false,
+            escClose: false,
+            hooks: {
+                closed() {
+                    $("#group").val("");
+                    $("#groupDesc").val("");
+                }
+            }
+        }).onClose((ok, cc, done) => {
+            if (ok) {
+                if (qq.value.trim() !== "") {
+                    done();
+                    add(qq.value,description.value,2)
+                } else {
+                    cc.setErrorText("QQ群号输入不能为空！");
+                }
+            } else {
+                done();
+            }
+        });
+    }
+
+   /* ------ 在线发送消息 ------ */
+    function sendMessage() {
+        var qq = $("#sendQQ").val();
+        var str = $("#sendStr").val();
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/api/postMessage/"+login.apiKey+"/"+qq+"?message="+str,
+            contentType : "application/json",
+            success: function (response) {
+                if (response.code === "200") {
+                    msg('发送成功');
+                }else {
+                    msg(response.message);
+                }
+            }
+        })
+    }
+</script>
+</html>
