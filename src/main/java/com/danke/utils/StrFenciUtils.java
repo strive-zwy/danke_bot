@@ -25,6 +25,7 @@ public class StrFenciUtils {
         //分词
         TokenStream ts=anal.tokenStream("", reader);
         CharTermAttribute term=ts.getAttribute(CharTermAttribute.class);
+        ts.reset();
         //遍历分词数据
         while(ts.incrementToken()){
             strings.add(term.toString());
