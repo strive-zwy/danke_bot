@@ -41,8 +41,8 @@
                     <p class="con-key-p">为避免有人恶意使用后造成信息轰炸，请不要泄露您的 key</p>
                 </div>
                 <div class="con-other">
-                    <span class="con-span" >还可以添加<b><span class="con-b" th:text="${session.login.canAddQqNum}"></span></b>个QQ/共<span class="con-b">5</span>个</span>
-                    <span class="con-span" >还可以添加<b><span class="con-b" th:text="${session.login.canAddGroupNum}"></span></b>个QQ群/共<span class="con-b">2</span>个</span>
+                    <span class="con-span" >还可以添加<b><span class="con-b" id="canAddQqNum" th:text="${session.login.canAddQqNum}"></span></b>个QQ/共<span class="con-b">5</span>个</span>
+                    <span class="con-span" >还可以添加<b><span class="con-b" id="canAddGroupNum" th:text="${session.login.canAddGroupNum}"></span></b>个QQ群/共<span class="con-b">2</span>个</span>
                 </div>
             </div>
         </div>
@@ -272,13 +272,13 @@
         var str;
         if (isMonitor === 1) {
             str = "<iconpark-icon color='#f20003' onclick='updateMonistor("+id+", \"确定关闭监听吗？\")' " +
-                "size='18' name='play' class='min-icon'></iconpark-icon>";
+                "size='18' name='play' data-wenk='关闭监听' data-wenk-pos='top' class='min-icon'></iconpark-icon>";
         }else {
             str = "<iconpark-icon color='#1E9FFF' onclick='updateMonistor("+id+", \"确定开启监听吗？\")' " +
-            "size='18' name='pause-one' class='min-icon'></iconpark-icon>";
+            "size='18' name='pause-one' data-wenk='开启监听监听' data-wenk-pos='top' class='min-icon'></iconpark-icon>";
         }
         str += "<iconpark-icon color='#1E9FFF' onclick='addKeyword("+id+","+isMonitor+")' " +
-            "size='18' name='add-one' class='min-icon'></iconpark-icon>";
+            "size='18' name='add-one' data-wenk='添加关键词' data-wenk-pos='top' class='min-icon'></iconpark-icon>";
         return str;
     }
     function state(state){
@@ -384,10 +384,14 @@
                     success: function (response) {
                         if (response.code === "200") {
                             msg("删除成功");
-                            if (type === 3){
-                                getKlist(id,isMonitor);
-                            }else {
+                            if (type === 1) {
+                                $("#canAddQqNum").text(response.result);
                                 getqq();
+                            }else if (type === 2) {
+                                $("#canAddGroupNum").text(response.result);
+                                getqq();
+                            }else {
+                                getKlist(id,isMonitor);
                             }
                         }else {
                             msg("删除失败");
@@ -464,7 +468,12 @@
             success: function (response) {
                 if (response.code === "200") {
                     msg("添加成功!");
-                    getqq()
+                    getqq();
+                    if (type === 1) {
+                        $("#canAddQqNum").text(response.result);
+                    }else if (type === 2) {
+                        $("#canAddGroupNum").text(response.result);
+                    }
                 }
             }
         })
