@@ -1,9 +1,11 @@
 package com.danke.controller;
 
 import com.danke.bean.MessageBean;
+import com.danke.entity.ApiMessage;
 import com.danke.entity.Login;
 import com.danke.entity.QqInfo;
 import com.danke.exception.ResultBody;
+import com.danke.mapper.ApiMessageMapper;
 import com.danke.mapper.LoginMapper;
 import com.danke.mapper.QqInfoMapper;
 import com.danke.utils.KeyUtils;
@@ -15,12 +17,13 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigInteger;
 
 /**
  * @author zwy
  * @version 1.0
  * @createTime 2021/12/13 14:15
- * @description: TODO
+ * @description: api 接口
  */
 @Controller
 @RequestMapping("/api")
@@ -36,6 +39,10 @@ public class APIKeyController {
     @Qualifier("qqInfoMapper")
     @Autowired
     private QqInfoMapper qqInfoMapper;
+
+    @Qualifier("apiMessageMapper")
+    @Autowired
+    private ApiMessageMapper apiMessageMapper;
 
     @RequestMapping(value = "/getKey", method = RequestMethod.GET)
     @ResponseBody
@@ -70,6 +77,10 @@ public class APIKeyController {
         if (qqInfo == null) {
             return ResultBody.error("QQ号异常，请检查该QQ号是否添加蛋壳为好友或是否在您的QQ列表中！");
         }
+        ApiMessage apiMessage = new ApiMessage();
+        apiMessage.setMsg(message)
+                .setReceiver(qq);
+        apiMessageMapper.save(apiMessage);
         // 发送消息
         botManager.getDefaultBot().getSender().SENDER.sendPrivateMsg(qq,message);
         return ResultBody.success();

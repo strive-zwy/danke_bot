@@ -1,20 +1,13 @@
 package com.danke.controller;
 
-import com.danke.bean.AddBean;
-import com.danke.bean.DeleteBean;
-import com.danke.bean.QQBean;
-import com.danke.entity.GroupInfo;
-import com.danke.entity.Keyword;
-import com.danke.entity.Login;
-import com.danke.entity.QqInfo;
+import com.danke.bean.*;
+import com.danke.entity.*;
 import com.danke.enums.POrGEnum;
-import com.danke.exception.DataBody;
 import com.danke.exception.ResultBody;
-import com.danke.mapper.GroupInfoMapper;
-import com.danke.mapper.KeywordMapper;
-import com.danke.mapper.QqInfoMapper;
-import com.danke.mapper.TaskMapper;
-import com.danke.utils.KeyUtils;
+import com.danke.mapper.*;
+import com.danke.wrapper.ApiMessageQuery;
+import com.danke.wrapper.LoginQuery;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -24,13 +17,17 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author zwy
  * @version 1.0
  * @createTime 2022/1/5 19:56
- * @description: TODO
+ * @description: 数据获取接口
  */
 @Controller
 @RequestMapping("/data")
@@ -52,6 +49,13 @@ public class DataController {
     @Autowired
     private TaskMapper taskMapper;
 
+    @Qualifier("loginMapper")
+    @Autowired
+    private LoginMapper loginMapper;
+
+    @Qualifier("apiMessageMapper")
+    @Autowired
+    private ApiMessageMapper apiMessageMapper;
 
     @RequestMapping(value = "/getqq", method = RequestMethod.GET)
     @ResponseBody
@@ -95,23 +99,36 @@ public class DataController {
     @ResponseBody
     public ResultBody add(@RequestBody AddBean addBean, HttpServletRequest request){
         Login login = (Login)request.getSession().getAttribute("login");
+        int num = 0;
         if (login == null) {
             return ResultBody.error("-1","用户未登录");
         }
         if (addBean.getType() == 1) {
-            QqInfo qq = new QqInfo();
-            qq.setAdder(login.getId())
-                    .setAvatar("http://q1.qlogo.cn/g?b=qq&nk=" + addBean.getQq() + "&s=100")
-                    .setDescription(addBean.getDescription())
-                    .setQqNumber(addBean.getQq());
-            qqInfoMapper.save(qq);
+            if (login.getCanAddQqNum() > 0) {
+                QqInfo qq = new QqInfo();
+                qq.setAdder(login.getId())
+                        .setAvatar("http://q1.qlogo.cn/g?b=qq&nk=" + addBean.getQq() + "&s=100")
+                        .setDescription(addBean.getDescription())
+                        .setQqNumber(addBean.getQq());
+                qqInfoMapper.save(qq);
+                num = login.getCanAddQqNum() - 1;
+                login.setCanAddQqNum(num);
+            }else {
+                return ResultBody.error("-1","您还可以添加的QQ数量为：0");
+            }
         }else if (addBean.getType() == 2){
-            GroupInfo groupInfo = new GroupInfo();
-            groupInfo.setAdder(login.getId())
-                    .setAvatar("http://p.qlogo.cn/gh/" + addBean.getQq() + "/" + addBean.getQq() + "/0")
-                    .setDescription(addBean.getDescription())
-                    .setGroupNumber(addBean.getQq());
-            groupInfoMapper.save(groupInfo);
+            if (login.getCanAddGroupNum() > 0) {
+                GroupInfo groupInfo = new GroupInfo();
+                groupInfo.setAdder(login.getId())
+                        .setAvatar("http://p.qlogo.cn/gh/" + addBean.getQq() + "/" + addBean.getQq() + "/0")
+                        .setDescription(addBean.getDescription())
+                        .setGroupNumber(addBean.getQq());
+                groupInfoMapper.save(groupInfo);
+                num = login.getCanAddGroupNum() - 1;
+                login.setCanAddGroupNum(num);
+            }else {
+                return ResultBody.error("-1","您还可以添加的QQ数量为：0");
+            }
         }else {
             Keyword keyword = new Keyword();
             keyword.setKw(addBean.getDescription())
@@ -119,13 +136,16 @@ public class DataController {
                     .setState(1);
             keywordMapper.save(keyword);
         }
-        return ResultBody.success();
+        loginMapper.saveOrUpdate(login);
+        request.getSession().setAttribute("login",login);
+        return ResultBody.success(num);
     }
 
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ResponseBody
     public ResultBody delete(@RequestBody DeleteBean deleteBean, HttpServletRequest request){
         Login login = (Login)request.getSession().getAttribute("login");
+        int num = 0;
         if (login == null) {
             return ResultBody.error("-1","用户未登录");
         }
@@ -135,6 +155,8 @@ public class DataController {
                     taskMapper.defaultQuery().where.creatorId().eq(deleteBean.getId())
                     .and.pOrG().eq(POrGEnum.USER_TASK.getType()).end()
             );
+            num = login.getCanAddQqNum() + 1;
+            login.setCanAddQqNum(num);
         }else if (deleteBean.getType() == 2){
             groupInfoMapper.deleteById(deleteBean.getId());
             keywordMapper.delete(
@@ -144,10 +166,14 @@ public class DataController {
                     taskMapper.defaultQuery().where.creatorId().eq(deleteBean.getId())
                             .and.pOrG().eq(POrGEnum.GROUP_TASK.getType()).end()
             );
+            num = login.getCanAddGroupNum() + 1;
+            login.setCanAddGroupNum(num);
         }else {
             keywordMapper.deleteById(deleteBean.getId());
         }
-        return ResultBody.success();
+        loginMapper.saveOrUpdate(login);
+        request.getSession().setAttribute("login",login);
+        return ResultBody.success(num);
     }
 
     @RequestMapping(value = "/updateKwState", method = RequestMethod.POST)
@@ -184,6 +210,94 @@ public class DataController {
         g.setIsMonitor(currMonistor);
         groupInfoMapper.saveOrUpdate(g);
         return ResultBody.success(currMonistor);
+    }
+
+    @RequestMapping(value = "/getIndex", method = RequestMethod.GET)
+    @ResponseBody
+    public ResultBody getIndex(HttpServletRequest request){
+        int loginCount = loginMapper.count(
+                loginMapper.query().select.count.end()
+        );
+        int apiCount = apiMessageMapper.count(
+                apiMessageMapper.query().select.count.end()
+        );
+        int qqCount = qqInfoMapper.count(
+                qqInfoMapper.query().select.count.end()
+        );
+        int groupCount = groupInfoMapper.count(
+                groupInfoMapper.query().select.count.end()
+        );
+        Map<String,Integer> map = new HashMap<>();
+        map.put("loginCount",loginCount);
+        map.put("apiCount",apiCount);
+        map.put("qqCount",qqCount);
+        map.put("groupCount",groupCount);
+        return ResultBody.success(map);
+    }
+
+    @RequestMapping(value = "/getUserList", method = RequestMethod.GET)
+    @ResponseBody
+    public ResultBody getUserList(HttpServletRequest request,
+                                  @RequestParam(name = "page" , defaultValue = "1") Integer page,
+                                  @RequestParam(name = "size" , defaultValue = "5") Integer size,
+                                  @RequestParam(name = "search" , required = false) String search,
+                                  @RequestParam(name = "role" , required = false) Integer role){
+        int offset = size * (page - 1);
+        LoginQuery loginQuery = loginMapper.query().orderBy.id().asc().end();
+        search = search.trim();
+        if (StringUtils.isNoneBlank(search)) {
+            loginQuery.where.nickname().like(search).end();
+        }
+        if (role != 9) {
+            loginQuery.where.role().eq(role).end();
+        }
+        Integer userTotleCount = loginMapper.count(loginQuery);
+        List<Login> userList = loginMapper.listEntity(
+                loginQuery.limit(offset,size)
+        );
+        PageBean<Login> userPage = new PageBean<>();
+        userPage.setList(userList);
+        userPage.setPagination(userTotleCount,page,size);
+        Map<String,Object> map = new HashMap<>();
+        map.put("userPage",userPage);
+        map.put("search",search);
+        map.put("role",role);
+        return ResultBody.success(map);
+    }
+
+    @RequestMapping(value = "/getApiList", method = RequestMethod.GET)
+    @ResponseBody
+    public ResultBody getApiList(HttpServletRequest request,
+                                 @RequestParam(name = "page" , defaultValue = "1") Integer page,
+                                 @RequestParam(name = "size" , defaultValue = "5") Integer size,
+                                 @RequestParam(name = "search" , required = false) String search){
+        int offset = size * (page - 1);
+        ApiMessageQuery apiMessageQuery = apiMessageMapper.query().orderBy.gmtCreate().desc().end();
+        if (StringUtils.isNoneBlank(search)) {
+            apiMessageQuery.where.receiver().eq(search).or.msg().like(search).end();
+        }
+        Integer apiTotleCount = apiMessageMapper.count(apiMessageQuery);
+        List<ApiMessage> apiList = apiMessageMapper.listEntity(
+                apiMessageQuery.limit(offset,size)
+        );
+        PageBean<ApiMessage> apiPage = new PageBean<>();
+        apiPage.setList(apiList);
+        apiPage.setPagination(apiTotleCount,page,size);
+        Map<String,Object> map = new HashMap<>();
+        map.put("apiPage",apiPage);
+        map.put("search",search);
+        return ResultBody.success(map);
+    }
+
+    @RequestMapping(value = "/toUpdateUser", method = RequestMethod.POST)
+    @ResponseBody
+    public ResultBody toUpdateUser(@RequestBody UserUpdateBean userUpdateBean, HttpServletRequest request){
+        Login login = loginMapper.findById(userUpdateBean.getId());
+        login.setCanAddGroupNum(userUpdateBean.getCanAddGroupNum())
+                .setCanAddQqNum(userUpdateBean.getCanAddQqNum())
+                .setRole(userUpdateBean.getRole());
+        loginMapper.saveOrUpdate(login);
+        return ResultBody.success();
     }
 
 }

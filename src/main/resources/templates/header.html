@@ -4,11 +4,12 @@
   @createTime 2022/1/20 17:06
   @description: 页面 header
 -->
-<!DOCTYPE html>
-<html lang="en">
+<!--suppress ALL-->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <body>
     <div id="header-all" class="header" th:fragment="nav">
         <a class="header-l" href="/"><div id="logo"></div>danke-bot</a>
+        <a th:if="${session.login != null && session.login.role == 1}" class="header-r" href="/admin">后台管理</a>
         <a class="header-r" href="/console">管理台</a>
         <a class="header-r" href="/readDoc">阅读文档</a>
     </div>

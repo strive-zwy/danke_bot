@@ -50,6 +50,9 @@ public class LoginController {
         log.info("用户token ---- " + login.getToken());
         log.info("用户昵称 ---- " + login.getNickname());
         request.getSession().setAttribute("login",login);
+        if (login.getRole() == 1) {
+            return "redirect:/admin";
+        }
         return "redirect:/console";
     }
 
@@ -79,6 +82,10 @@ public class LoginController {
                         .setNickname(resp.getData().getNickname())
                         .setLocation(resp.getData().getLocation());
                 loginMapper.saveOrUpdate(login);
+                if (login.getRole() == 1) {
+                    request.getSession().setAttribute("login",login);
+                    return "redirect:/admin";
+                }
             }
             log.info("用户token ---- " + login.getToken());
             log.info("用户昵称 ---- " + login.getNickname());
@@ -98,8 +105,8 @@ public class LoginController {
 
     private AuthRequest getAuthRequest() {
         return new AuthQqRequest(AuthConfig.builder()
-                .clientId("")
-                .clientSecret("")
+                .clientId("101989978")
+                .clientSecret("63fe75926012888513873710f0dfc10f")
                 .redirectUri("http://www.dankebot.top/callback")
                 .build());
     }
