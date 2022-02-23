@@ -1,0 +1,57 @@
+<!--
+  @author zwy
+  @version 1.0
+  @createTime 2022/2/15 20:54
+  @description: TODO 
+-->
+<!--suppress ALL-->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="adminIndex">
+    <h2 class="admin-h2">欢迎管理员: <span th:text="${session.login.nickname}"></span></h2>
+    <div class="adminIndex-all">
+        <div class="adminIndex-data">
+            <iconpark-icon  class='adminIndex-data-icon' size='120' name='every-user'></iconpark-icon>
+            <div class="adminIndex-count">5
+<!--                <span th:text="${loginCount}"></span>-->
+            </div>
+            <div class="adminIndex-str">用户数量</div>
+        </div>
+
+        <div class="adminIndex-data">
+            <iconpark-icon  class='adminIndex-data-icon' size='120' name='api'></iconpark-icon><br>
+            <div class="adminIndex-count">5
+<!--                <span th:text="${apiCount}"></span>-->
+            </div>
+            <div class="adminIndex-str">接口调用次数</div>
+        </div>
+
+        <div class="adminIndex-data">
+            <iconpark-icon  class='adminIndex-data-icon' size='120' name='tencent-qq'></iconpark-icon>
+            <div class="adminIndex-count">5
+<!--                <span th:text="${qqCount}"></span>-->
+            </div>
+            <div class="adminIndex-str">QQ 数量</div>
+        </div>
+
+        <div class="adminIndex-data">
+            <iconpark-icon  class='adminIndex-data-icon' size='120' name='peoples-two'></iconpark-icon><br>
+            <div class="adminIndex-count">5
+<!--                <span th:text="${groupCount}"></span>-->
+            </div>
+            <div class="adminIndex-str">QQ 群数量</div>
+        </div>
+    </div>
+</div>
+
+<!--<div th:fragment="adminUserList">
+    aaaaa
+</div>
+
+<div th:fragment="adminApiList">
+    bbbb
+</div>-->
+
+
+</body>
+</html>

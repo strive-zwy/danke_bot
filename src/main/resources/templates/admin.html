@@ -1,0 +1,474 @@
+<!--
+  @author zwy
+  @version 1.0
+  @createTime 2022/2/12 20:52
+  @description: dankebot-后台管理
+-->
+<!--suppress ALL-->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>dankebot-后台管理</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="http://zwyz.oss-cn-beijing.aliyuncs.com/community/publish/img/1638861501437.png?Expires=1954221492&OSSAccessKeyId=LTAI4GK95AhfKyxui78C1KkS&Signature=%2Bmi20Lkybycotcr%2FUCQS4PvzU60%3D" type="image/x-icon">
+    <link rel="stylesheet" href="/css/admin.css?v=22">
+    <link rel="stylesheet" href="https://anijs.github.io/lib/anicollection/anicollection.css" />
+    <script src="/jq/jquery_1.10.2_jquery.js"></script>
+    <script src="/js/dialog.js"></script>
+    <script src="/js/coco-modal.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particlesjs/2.2.3/particles.min.js"></script>
+    <script src="https://lf1-cdn-tos.bytegoofy.com/obj/iconpark/icons_6004_15.db07864e2933e74395c8b9bea2771e34.js"></script>
+
+</head>
+<body>
+<section class="login-bcg">
+    <!--引入顶部导航栏-->
+    <div th:replace="~{header :: nav}"></div>
+    <div class="menu-all">
+        <div class="menu-m">
+            <img th:src="${session.login.avatar}" th:alt="${session.login.nickname}" class="menu-admin"/>
+            <p class="menu-p" th:text="${session.login.nickname}"><p/>
+            <ul class="menu">
+                    <li class="menu-item active" item-data="index">
+                        <iconpark-icon color="#ff0266" class='menu-item-icon' size='18' name='home'></iconpark-icon>
+                        首页
+                    </li>
+                    <li class="menu-item" item-data="userList">
+                        <iconpark-icon color="#ff0266" class='menu-item-icon' size='18' name='every-user'></iconpark-icon>
+                        用户列表
+                    </li>
+                    <li class="menu-item" item-data="apiList">
+                        <iconpark-icon color="#ff0266" class='menu-item-icon' size='18' name='api'></iconpark-icon>
+                        接口调用列表
+                    </li>
+            </ul>
+        </div>
+    </div>
+    <section class="content" id="admin-right">
+        <!--<div class="right-list">
+            <div id="right-list">
+                <ul class="right-ul">
+                    <li class="right-list-header">
+                        <div class="right-item-api">发送QQ</div>
+                        <div class="right-item-api">发送内容</div>
+                        <div class="right-item-api">发送时间</div>
+                    </li>
+                    <li class="right-list-li">
+                        <div class="right-item-api">1228304424</div>
+                        <div class="right-item-api api-str">合法回复哈人家发哈感觉话噶苏给哈佛的更好的歌哈尔</div>
+                        <div class="right-item-api">2022-02-17 20:08:28</div>
+                    </li>
+                </ul>
+            </div>
+            <div class="right-page">
+                <div class="page-totle">共 5 页，当前第 1 页</div>
+                <div class="page-list">&lt;&lt;</div>
+                <div class="page-list">&lt;</div>
+                <div class="page-list page-list-active">1</div>
+                <div class="page-list">2</div>
+                <div class="page-list">3</div>
+                <div class="page-list">&gt;</div>
+                <div class="page-list">&gt;&gt;</div>
+            </div>
+        </div>-->
+    </section>
+    <div class="footer footer-con">
+        <p>Copyright © 2022 dankebot.top</p>
+        <p><a class="beian" href="http://beian.miit.gov.cn/">豫ICP备2021037847号</a></p>
+    </div>
+</section>
+
+<canvas class="background"></canvas>
+<div id="updateUser" style="display: none">
+    <div>
+        <span>还能添加的QQ数：</span>
+        <input id="canAddQqNum" type="text" class="coco-input">
+    </div>
+    <div>
+        <span>还能添加的QQ群数：</span>
+        <input id="canAddGroupNum" type="text" class="coco-input">
+    </div>
+    <div>
+        <span>身份权限：</span>
+        <select id="update-role" class="updateSelect">
+            <option class="updateSelect-op" value = 0 >普通用户</option>
+            <option class="updateSelect-op" value = 1 >管理员</option>
+        </select>
+    </div>
+</div>
+</body>
+<!--<script src="https://anijs.github.io/lib/anijs/anijs.js"></script>-->
+<!--<script src="https://anijs.github.io/lib/anijs/helpers/scrollreveal/anijs-helper-scrollreveal.js"></script>-->
+<script type="text/javascript" language="JavaScript" th:inline="javascript">
+    var login ;
+    login = [[${session.login}]];
+
+    window.onload = function () {
+        Particles.init({
+            selector: ".background"
+        });
+    };
+    var particles = Particles.init({
+        selector: ".background",
+        color: ["#4672fe", "#ff0266", "#000000"],
+        connectParticles: true,
+        responsive: [
+            {
+                breakpoint: 768,
+                options: {
+                    color: ["#faebd7", "#4672fe", "#ff0266"],
+                    maxParticles: 243,
+                    connectParticles: false
+                }
+            }
+        ]
+    });
+    function msg(str) {
+        coco({
+            header: false,
+            footer: false,
+            html: "<div class='msg'>"+str+"</div>",
+        });
+
+    }
+    const menus = document.querySelectorAll('.menu')
+    menus.forEach(menu => {
+        const menuItems = menu.querySelectorAll('.menu-item')
+        menuItems.forEach((item) => {
+            item.addEventListener('click', e => {
+                menuItems.forEach(item => {
+                    item.classList.remove('active')
+                })
+                item.classList.add('active')
+                const data = item.getAttribute("item-data");
+                console.log(data);
+                if (data === 'index') {
+                    getIndex();
+                }else if (data === 'userList') {
+                    getUserList(1, 5, "  ", 9,0)
+                }else if (data === 'apiList') {
+                    getApiList(1, 5, "", 0)
+                }
+            })
+        })
+    })
+
+    getIndex();
+    function getIndex(){
+        $.ajax({
+            type: "GET",
+            dataType: "json",
+            url: "/data/getIndex",
+            contentType : "application/json",
+            success: function (response) {
+                data = response.result;
+                console.log(data);
+                $("#admin-right").html(getIndexData(data.loginCount, data.apiCount, data.qqCount, data.groupCount))
+            }
+        })
+    }
+    function getIndexData(loginCount, apiCount, qqCount, groupCount) {
+        var data = "<h2 class=\"admin-h2\">欢迎管理员: <span>"+login.nickname+"，   本站已运行"+getDay()+"天</span></h2>\n" +
+            "    <div class=\"adminIndex-all\">\n" +
+            "        <div class=\"adminIndex-data\">\n" +
+            "            <iconpark-icon  class='adminIndex-data-icon' size='120' name='every-user'></iconpark-icon>\n" +
+            "            <div class=\"adminIndex-count\">\n" +
+            "                <span>" + loginCount + "</span>\n" +
+            "            </div>\n" +
+            "            <div class=\"adminIndex-str\">用户数量</div>\n" +
+            "        </div>\n" +
+            "\n" +
+            "        <div class=\"adminIndex-data\">\n" +
+            "            <iconpark-icon  class='adminIndex-data-icon' size='120' name='api'></iconpark-icon><br>\n" +
+            "            <div class=\"adminIndex-count\">\n" +
+            "               <span>"+ apiCount +"</span>\n" +
+            "            </div>\n" +
+            "            <div class=\"adminIndex-str\">接口调用次数</div>\n" +
+            "        </div>\n" +
+            "\n" +
+            "        <div class=\"adminIndex-data\">\n" +
+            "            <iconpark-icon  class='adminIndex-data-icon' size='120' name='tencent-qq'></iconpark-icon>\n" +
+            "            <div class=\"adminIndex-count\">\n" +
+            "                <span>"+ qqCount +"</span>\n" +
+            "            </div>\n" +
+            "            <div class=\"adminIndex-str\">QQ 数量</div>\n" +
+            "        </div>\n" +
+            "\n" +
+            "        <div class=\"adminIndex-data\">\n" +
+            "            <iconpark-icon  class='adminIndex-data-icon' size='120' name='peoples-two'></iconpark-icon><br>\n" +
+            "            <div class=\"adminIndex-count\">\n" +
+            "               <span>"+ groupCount +"</span>\n" +
+            "            </div>\n" +
+            "            <div class=\"adminIndex-str\">QQ 群数量</div>\n" +
+            "        </div>\n" +
+            "    </div>";
+        return data;
+    }
+
+    function getDay() {
+        var endTime = parseInt(new Date().getTime() / 1000) - new Date('2022-02-01 00:00:00').getTime() / 1000;
+        var timeDay = parseInt(endTime / 60 / 60 / 24);
+        return timeDay;
+    }
+
+    function getUserList(page, size, search, role, type){
+        if (type === 1) {
+            search = $("#search").val();
+            role = $("#role").val();
+        }
+        console.log("list:search:"+search);
+        console.log("list:role:"+role);
+        console.log("list:type:"+type);
+        $.ajax({
+            type: "GET",
+            dataType: "json",
+            url: "/data/getUserList?page="+page+"&size="+size+"&search="+search+"&role="+role,
+            contentType : "application/json",
+            success: function (response) {
+                data = response.result.userPage;
+                search = response.result.search;
+                role = response.result.role;
+                console.log(data);
+                console.log("role --- "+role);
+                $("#admin-right").html(getUserListData(data, search, role, type));
+                selectRole(role);
+            }
+        })
+    }
+
+    function getUserListData(data, search, role, type){
+        var str = "<div class=\"right-list\">\n" +
+            "            <div id=\"right-list\">\n" +
+            "<div class=\"right-search\">" +
+            "   <input class='right-input' id='search' type='text' value='"+search +"' placeholder='输入关键词'>" +
+            "   <select class='right-select' id='role'>" +
+            "       <option class='role-op' value='9'>全部</option>" +
+            "       <option class='role-op' value='0'>普通用户</option>" +
+            "       <option class='role-op' value='1'>管理员</option>" +
+            "   <select/>" +
+            "   <button class='right-btn' onclick='getUserList(1, 5, \"  \", 9,1)'>搜索</button>" +
+            "   <button class='right-btn right-btn-reset' onclick='getUserList(1, 5, \"  \", 9,0)'>重置搜索</button>" +
+            "</div>" +
+            "                <ul class=\"right-ul\">\n" +
+            "                    <li class=\"right-list-header\">\n" +
+            "                        <div class=\"right-item\">头像</div>\n" +
+            "                        <div class=\"right-item\">昵称</div>\n" +
+            "                        <div class=\"right-item\">还能添加QQ数</div>\n" +
+            "                        <div class=\"right-item\">还能添加QQ群数</div>\n" +
+            "                        <div class=\"right-item\">身份</div>\n" +
+            "                        <div class=\"right-item\">操作</div>\n" +
+            "                    </li>";
+        var list = data.list;
+        for (var i = 0; i < list.length; i++) {
+            str += "<li class=\"right-list-li\">\n" +
+                "                        <div class=\"right-item\">\n" +
+                "                            <img class=\"right-img\" src=\""+ list[i].avatar +"\">\n" +
+                "                        </div>\n" +
+                "                        <div class=\"right-item\">"+ list[i].nickname +"</div>\n" +
+                "                        <div class=\"right-item\">"+ list[i].canAddQqNum +"</div>\n" +
+                "                        <div class=\"right-item\">"+ list[i].canAddGroupNum +"</div>\n" +
+                "                        <div class=\"right-item\">"+ getRole(list[i].role) +"</div>\n" +
+                "                        <div class=\"right-item\">\n" +
+                "                            <iconpark-icon color='#1E9FFF' class=\"right-icon\" onclick='updateUser("+list[i].id+","+list[i].canAddQqNum+","+list[i].canAddGroupNum+","+list[i].role+")' size=\"18\" name=\"edit-two\"></iconpark-icon>\n" +
+                "                        </div>\n" +
+                "                    </li>";
+        }
+        str += "</ul>\n" +
+            "            </div>\n" +
+            "<div class=\"page-totle\">共 " + data.totlePage + "页，当前第 " + data.page + " 页</div>" +
+            "            <div class=\"right-page\">\n";
+        if (data.showFirstPage) {
+            str += "<div class=\"page-list\" onclick='getUserList(1,5,\""+search+"\","+role+","+type+")'>&lt;&lt;</div>";
+        }
+        if (data.showPrevious) {
+            str += "<div class=\"page-list\" onclick='getUserList(data.page-1,5,\""+search+"\","+role+","+type+")'>&lt;</div>";
+        }
+        // 页码列表
+        var pages = data.pages;
+        for (var j = 0; j < pages.length; j++) {
+            if (data.page === pages[j]) {
+                str += "<div class=\"page-list page-list-active\" onclick='getUserList("+pages[j]+",5,\""+search+"\","+role+","+type+")' >"+ pages[j] +"</div>";
+            }else {
+                str += "<div class=\"page-list\" onclick='getUserList("+pages[j]+",5,\""+search+"\","+role+","+type+")' >"+ pages[j] +"</div>";
+            }
+
+        }
+        if (data.showNext) {
+            str += "<div class=\"page-list\" onclick='getUserList(data.page+1,5,\""+search+"\","+role+","+type+")'>&gt;</div>";
+        }
+        if (data.showEndPage) {
+            str += "<div class=\"page-list\" onclick='getUserList(data.totlePage,5,\""+search+"\","+role+","+type+")'>&gt;&gt;</div>";
+        }
+        str += "</div>\n" +
+            "        </div>";
+        return str;
+    }
+    function selectRole(role) {
+        const osel = document.querySelectorAll('.right-select')
+        osel.forEach(osel => {
+            const opts = osel.querySelectorAll('.role-op')
+            opts.forEach((item) => {
+                if (role+"" === item.value){
+                    item.setAttribute("selected","selected");
+                }
+            })
+        })
+    }
+
+    function updateRole(role) {
+        const osel = document.querySelectorAll('.updateSelect')
+        osel.forEach(osel => {
+            const opts = osel.querySelectorAll('.updateSelect-op')
+            opts.forEach((item) => {
+                if (role+"" === item.value){
+                    item.setAttribute("selected","selected");
+                }
+            })
+        })
+    }
+
+    function getRole(role){
+        var str = "";
+        if (role ===  1) {
+            str = "<span class='right-span right-span-admin'>管理员</span>"
+        }else {
+            str = "<span class='right-span right-span-user'>普通用户</span>"
+        }
+        return str;
+    }
+
+    function updateUser(id, canAddQqNum, canAddGroupNum, role) {
+        let qqNum =  document.body.querySelector("#canAddQqNum");
+        let groupNum = document.body.querySelector("#canAddGroupNum");
+        let update_role = document.body.querySelector("#update-role");
+        $("#canAddQqNum").val(canAddQqNum);
+        $("#canAddGroupNum").val(canAddGroupNum);
+        updateRole(role)
+        coco({
+            title: "修改用户信息",
+            el: "#updateUser",
+            okText: "提交",
+            blur: true,
+            maskClose: false,
+            escClose: false,
+            hooks: {
+                closed() {
+                    $("#canAddQqNum").val("");
+                    $("#canAddGroupNum").val("");
+                }
+            }
+        }).onClose((ok, cc, done) => {
+            if (ok) {
+                var reg=/^[1-9]\d*$|^0$/;
+                console.log(qqNum.value);
+                console.log(groupNum.value);
+                console.log("update_role---" + update_role.value);
+                if (reg.test(qqNum.value) && reg.test(groupNum.value)) {
+                    done();
+                    toUpdateUser(id, qqNum.value, groupNum.value, update_role.value)
+                }else {
+                    cc.setErrorText("输入内容必需时数字！");
+                }
+            } else {
+                done();
+            }
+        });
+    }
+
+    function toUpdateUser(id, canAddQqNum, canAddGroupNum, role) {
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/data/toUpdateUser",
+            contentType : "application/json",
+            data : JSON.stringify({
+                "id" : id,
+                "canAddQqNum" : canAddQqNum,
+                "canAddGroupNum" : canAddGroupNum,
+                "role" : role
+            }),
+            success: function (response) {
+                if (response.code === "200") {
+                    msg("修改成功！！");
+                    getUserList(1, 5, "", 9, 0);
+                }
+            }
+        })
+    }
+
+    function getApiList(page, size, search, type){
+        if (type === 1) {
+            search = $("#search-api").val();
+        }
+        $.ajax({
+            type: "GET",
+            dataType: "json",
+            url: "/data/getApiList?page="+page+"&size="+size+"&search="+search,
+            contentType : "application/json",
+            success: function (response) {
+                data = response.result.apiPage;
+                search = response.result.search;
+                console.log(data);
+                $("#admin-right").html(getApiListData(data, search, type));
+            }
+        })
+    }
+
+    function getApiListData(data, search, type) {
+        var str = "<div class=\"right-list\">\n" +
+            "            <div id=\"right-list\">\n" +
+            "<div class=\"right-search\">" +
+            "   <input class='right-input' id='search-api' type='text' value='"+search +"' placeholder='输入关键词搜索'>" +
+            "   <button class='right-btn' onclick='getApiList(1, 5, \"  \", 1)'>搜索</button>" +
+            "   <button class='right-btn right-btn-reset' onclick='getApiList(1, 5, \"  \", 0)'>重置搜索</button>" +
+            "</div>" +
+            "                <ul class=\"right-ul\">\n" +
+            "                    <li class=\"right-list-header\">\n" +
+            "                        <div class=\"right-item-api\">接收QQ</div>\n" +
+            "                        <div class=\"right-item-api\">发送内容</div>\n" +
+            "                        <div class=\"right-item-api\">发送时间</div>\n" +
+            "                    </li>";
+        var list = data.list;
+        for (var i = 0; i < list.length; i++) {
+            str += "<li class=\"right-list-li\">\n" +
+                "                        <div class=\"right-item-api\">"+ list[i].receiver +"</div>\n" +
+                "                        <div class=\"right-item-api api-str\" onclick='showAllStr(\""+ list[i].msg +"\")'>"+ list[i].msg +"</div>\n" +
+                "                        <div class=\"right-item-api\">"+ list[i].gmtCreate +"</div>\n" +
+                "                    </li>";
+        }
+        str += "</ul>\n" +
+            "            </div>\n" +
+            "<div class=\"page-totle\">共 " + data.totlePage + "页，当前第 " + data.page + " 页</div>" +
+            "            <div class=\"right-page\">\n";
+        if (data.showFirstPage) {
+            str += "<div class=\"page-list\" onclick='getApiList(1,5,\""+search+"\","+type+")'>&lt;&lt;</div>";
+        }
+        if (data.showPrevious) {
+            str += "<div class=\"page-list\" onclick='getApiList(data.page-1,5,\""+search+"\","+type+")'>&lt;</div>";
+        }
+        // 页码列表
+        var pages = data.pages;
+        for (var j = 0; j < pages.length; j++) {
+            if (data.page === pages[j]) {
+                str += "<div class=\"page-list page-list-active\" onclick='getApiList("+pages[j]+",5,\""+search+"\","+type+")' >"+ pages[j] +"</div>";
+            }else {
+                str += "<div class=\"page-list\" onclick='getApiList("+pages[j]+",5,\""+search+"\","+type+")' >"+ pages[j] +"</div>";
+            }
+
+        }
+        if (data.showNext) {
+            str += "<div class=\"page-list\" onclick='getApiList(data.page+1,5,\""+search+"\","+type+")'>&gt;</div>";
+        }
+        if (data.showEndPage) {
+            str += "<div class=\"page-list\" onclick='getApiList(data.totlePage,5,\""+search+"\","+type+")'>&gt;&gt;</div>";
+        }
+        str += "</div>\n" +
+            "        </div>";
+        return str;
+    }
+    function showAllStr(str){
+        msg(str);
+    }
+</script>
+
+</html>
