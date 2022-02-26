@@ -543,6 +543,10 @@
     function sendMessage() {
         var qq = $("#sendQQ").val();
         var str = $("#sendStr").val();
+        if (qq === "" && qq === null && str === "" && str === null) {
+            msg("输入内容不能为空！");
+            return;
+        }
         $.ajax({
             type: "POST",
             dataType: "json",
