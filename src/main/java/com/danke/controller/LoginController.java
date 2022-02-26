@@ -105,8 +105,8 @@ public class LoginController {
 
     private AuthRequest getAuthRequest() {
         return new AuthQqRequest(AuthConfig.builder()
-                .clientId("101989978")
-                .clientSecret("63fe75926012888513873710f0dfc10f")
+                .clientId("")
+                .clientSecret("")
                 .redirectUri("http://www.dankebot.top/callback")
                 .build());
     }
