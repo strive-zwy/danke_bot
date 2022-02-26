@@ -3,6 +3,8 @@ simbot:
   core:
     # 扫描 simbot-bots目录下的所有 .bot 文件。
     bot-resource-type: RESOURCE_FIRST
+server:
+  port: 80
 #log
 logging:
   file:
@@ -19,25 +21,54 @@ spring:
     time-zone: GMT+8
     date-format: yyyy-MM-dd HH:mm:ss
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/danke_test?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=UTC
-    username: root
-    password: root
+
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://localhost:3306/danke_test?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=UTC
+      username: root
+      password: root
   flyway:
     url: jdbc:mysql://localhost:3306/danke_test?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=UTC
     user: root
     password: root
     enabled: true
+
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: LEGACYHTML5
+    encoding: utf-8
+    servlet:
+      content-type: text/html
+    cache: false
   #邮箱配置
-#  mail:
-#    host: smtp.163.com
-#    username: 111@163.com
-#    password: 111 # 邮箱开启smtp后显示的授权码
-#    default-encoding: utf-8
-#    properties:
-#      mail:
-#        smtp:
-#          auth: true
-#          starttls:
-#            enable: true
-#            required: true
+  mail:
+    port: 465
+    host: smtp.163.com
+    username: 123@163.com
+    password:  aaaaaaaaa # 邮箱开启smtp后显示的授权码
+    default-encoding: utf-8
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          ssl:
+            enable: true
+            socketFactory:
+              port: 465
+              class: javax.net.ssl.SSLSocketFactory
+
+
+
+ok:
+  http:
+    connect-timeout: 30
+    read-timeout: 30
+    write-timeout: 30
+  # 连接池中整体的空闲连接的最大数量
+    max-idle-connections: 200
+  # 连接空闲时间最多为 300 秒
+    keep-alive-duration: 300
