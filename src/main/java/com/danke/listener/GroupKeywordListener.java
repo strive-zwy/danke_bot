@@ -58,7 +58,7 @@ public class GroupKeywordListener {
             for (String s : strs) {
                 if (kw.contains(s)) {
                     sender.SETTER.setMsgRecall(msg.getFlag());
-                    sender.SENDER.sendGroupMsg(msg,"群内禁止发送此类消息！（发送三次踢出群聊）");
+                    sender.SENDER.sendGroupMsg(msg,"该群内禁止发送此类消息！");
                     return;
                 }
             }

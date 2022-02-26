@@ -1,12 +1,6 @@
 package com.danke.controller;
 
 import com.danke.entity.Login;
-import com.danke.mapper.ApiMessageMapper;
-import com.danke.mapper.GroupInfoMapper;
-import com.danke.mapper.LoginMapper;
-import com.danke.mapper.QqInfoMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,22 +16,6 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Controller
 public class SysController {
-
-    @Qualifier("loginMapper")
-    @Autowired
-    private LoginMapper loginMapper;
-
-    @Qualifier("apiMessageMapper")
-    @Autowired
-    private ApiMessageMapper apiMessageMapper;
-
-    @Qualifier("qqInfoMapper")
-    @Autowired
-    private QqInfoMapper qqInfoMapper;
-
-    @Qualifier("groupInfoMapper")
-    @Autowired
-    private GroupInfoMapper groupInfoMapper;
 
     @RequestMapping("/")
     public String indexPage(HttpServletRequest request){

@@ -37,14 +37,6 @@ public class MyTask {
     @Autowired
     private TaskMapper taskMapper;
 
-    @Qualifier("qqInfoMapper")
-    @Autowired
-    private QqInfoMapper qqInfoMapper;
-
-    @Qualifier("groupInfoMapper")
-    @Autowired
-    private GroupInfoMapper groupInfoMapper;
-
     /*
     * 定时任务，每秒执行
     * */
@@ -110,7 +102,6 @@ public class MyTask {
     * 定时任务，每个工作日每秒执行一次
     * */
     @Cron(value = "*/1 * * ? * MON-FRI", delay = 500)
-//    @Cron(value = "*/1 * * ? * MON-WED", delay = 500)
     public void workdayTask() {
         String time = LocalDateTime.now().toLocalTime().toString().substring(0,8);
         List<Task> list_workday_user = taskMapper.listEntity(
@@ -146,31 +137,5 @@ public class MyTask {
             System.out.println("周末定时任务执行：用户---" + u.getQqNumber() + "---" + LocalDateTime.now().toLocalTime());
         });
     }
-
-    /*@Fixed(value = 1, timeUnit = TimeUnit.HOURS, repeat = 1)
-    public void task() {
-        System.out.println("执行定时任务！！！");
-        FriendList friendList = botManager.getDefaultBot().getSender().GETTER.getFriendList();
-        System.out.println("friendList----"+friendList.getResults().size());
-        friendList.getResults().forEach(friendInfo -> {
-            System.out.println(friendInfo.getAccountNickname());
-            QqInfo user = new QqInfo();
-            user.setQqNumber(friendInfo.getAccountCodeNumber());
-            qqInfoMapper.save(user);
-        });
-        GroupList groupList = botManager.getDefaultBot().getSender().GETTER.getGroupList();
-        System.out.println("groupList----"+groupList.getResults().size());
-        groupList.getResults().forEach(groupInfo -> {
-            String gname = groupInfo.getGroupName();
-            Long gcode = groupInfo.getGroupCodeNumber();
-            System.out.println(gname);
-            System.out.println(gcode);
-            GroupInfo group = new GroupInfo();
-            group.setGroupNumber(gcode)
-                    .setGroupName(gname);
-            groupInfoMapper.insert(group);
-        });
-    }*/
-
 
 }

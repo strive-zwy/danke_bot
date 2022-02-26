@@ -27,6 +27,7 @@ public class PrivateEmailListener {
      * */
     @OnPrivate
     @ListenBreak
+    @Priority(2)
     @Filter(value = "向{{email,[\\s\\S]+}}发送{{str,[\\s\\S]+}}", matchType = MatchType.REGEX_MATCHES)
     public void nowWeather(PrivateMsg msg, MsgSender sender,
                            @FilterValue("email") String email,
